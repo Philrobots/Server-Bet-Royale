@@ -1,0 +1,26 @@
+
+from flask_restful import Resource
+from main.api.schemas.response.SportsGameResponseSchema import SportsGameResponseSchema
+
+from main.service.SportsGameService import SportsGameService
+
+
+class SportsGameResource(Resource):
+
+    def __init__(self, sports_game_service:SportsGameService, sports_game_response_schema:SportsGameResponseSchema):
+        self.sports_game_service = sports_game_service
+        self.sports_game_response_schema = sports_game_response_schema
+
+    def get(self):
+        basket_ball_games = self.sports_game_service.get_basketball_sports_games()
+        hockey_games = self.sports_game_service.get_hockey_sports_games()
+        mma_games = self.sports_game_service.get_mma_sports_games()
+        baseball_games = self.sports_game_service.get_mlb_sports_games()
+        
+
+        return {
+            'basketball': [self.sports_game_response_schema.dump(sports_game) for sports_game in basket_ball_games],
+            'hockey': [self.sports_game_response_schema.dump(sports_game) for sports_game in hockey_games],
+            'mma': [self.sports_game_response_schema.dump(sports_game) for sports_game in mma_games],
+            'baseball': [self.sports_game_response_schema.dump(sports_game) for sports_game in baseball_games]
+        }

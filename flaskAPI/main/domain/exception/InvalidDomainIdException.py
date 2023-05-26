@@ -1,0 +1,2 @@
+class InvalidDomainIdException(Exception):
+    pass

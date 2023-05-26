@@ -1,0 +1,3 @@
+
+class BetAmountCannotBeNegativeOrZeroException(Exception):
+    pass

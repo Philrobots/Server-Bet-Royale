@@ -1,0 +1,3 @@
+
+class BetAlreadyAcceptedException(Exception):
+    pass

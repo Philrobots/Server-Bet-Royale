@@ -1,0 +1,2 @@
+class UnableToGetBetAmountException(Exception):
+    pass

@@ -1,0 +1,2 @@
+class NonExistingEmailException(Exception):
+    pass

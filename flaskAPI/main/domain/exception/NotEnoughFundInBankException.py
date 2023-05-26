@@ -1,0 +1,2 @@
+class NotEnoughFundInBankException(Exception):
+    pass

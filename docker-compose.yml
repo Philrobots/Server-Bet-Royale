@@ -1,0 +1,52 @@
+version: '3.3'
+
+networks:
+  backend:
+    ipam:
+      config:
+        - subnet: 172.18.1.0/24
+        
+volumes:
+  mongodbdata:
+    driver: local
+
+services:
+  flaskapi:
+    build:
+      context: flaskAPI
+      dockerfile: ./development.Dockerfile
+    container_name: flaskapi
+    environment:
+      FLASK_APP: run.py
+      FLASK_ENV: development
+      FLASK_DEBUG: 1
+      MONGODB_CONNECTION_STRING: mongodb://root:golf123@172.18.1.2
+      PORT: 8000
+    networks:
+      backend:
+        ipv4_address: 172.18.1.4
+    ports:
+      - 8000:8000
+      - 5678:5678
+    entrypoint: [ "python", "-m", "debugpy", "--listen", "0.0.0.0:5678", "-m", "run",  "--wait-for-client", "--multiprocess", "-m", "flask", "run", "-h", "0.0.0.0", "-p", "8000" ]
+    expose:
+      - 8000
+    volumes:
+      - ./flaskAPI:/flask
+
+  mongodb:
+    image: mongo
+    container_name: 'mongodb'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: golf123
+      MONGO_INITDB_DATABASE: flaskdb
+      MONGODB_DATA_DIR: /data/db
+      MONGODB_LOG_DIR: /dev/null
+    networks:
+      backend:
+        ipv4_address: 172.18.1.2
+    volumes:
+      - mongodbdata:/data/db
+    ports: 
+      - 27017:27017

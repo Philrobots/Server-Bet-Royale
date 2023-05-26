@@ -1,0 +1,4 @@
+
+
+class SportsGameCompletedException(Exception):
+    pass

@@ -1,0 +1,3 @@
+
+class BetAuthorAcceptedBetException(Exception):
+    pass

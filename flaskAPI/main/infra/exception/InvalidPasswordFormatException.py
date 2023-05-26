@@ -1,0 +1,2 @@
+class InvalidPasswordFormatException(Exception):
+    pass

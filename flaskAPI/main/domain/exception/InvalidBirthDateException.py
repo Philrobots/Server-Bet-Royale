@@ -1,0 +1,2 @@
+class InvalidBirthDateException(Exception):
+    pass

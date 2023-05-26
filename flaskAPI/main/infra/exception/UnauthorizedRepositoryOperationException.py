@@ -1,0 +1,2 @@
+class UnauthorizedRepositoryOperationException(Exception):
+    pass

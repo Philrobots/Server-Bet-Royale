@@ -1,0 +1,2 @@
+class BetNotUpdatedException(Exception):
+    pass

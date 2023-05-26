@@ -1,0 +1,3 @@
+
+class InvalidLostBetTransaction(Exception):
+    pass

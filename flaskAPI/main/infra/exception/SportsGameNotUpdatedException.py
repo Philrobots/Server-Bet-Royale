@@ -1,0 +1,3 @@
+
+class SportsGameNotUpdatedException(Exception):
+    pass

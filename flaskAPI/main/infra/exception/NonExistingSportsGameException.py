@@ -1,0 +1,2 @@
+class NonExistingSportsGameException(Exception):
+    pass
