@@ -4,9 +4,10 @@ from stream_chat import StreamChat
 
 
 class ChatResource(Resource):
-    
+
     def __init__(self):
-        self.client = StreamChat("4vk9qckeeggf", "9j3e4zfnpn4tttmbegcxvcy7gf8fxeqq969vkgwf4sy8tmyecavym6mwgtqmcz93")
+        self.client = StreamChat(
+            "5sj7ykpnrmyz", "ad3ak53kz4bueppex6pqehtr69smjwkdm6vap9w7xhg3fxkbsmr2vmuw9t5ehhn5")
 
     def get(self):
         args = request.args
