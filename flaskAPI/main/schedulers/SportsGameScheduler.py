@@ -50,6 +50,12 @@ class SportsGameScheduler:
         for live_mma_game in live_mma_games:
             sport_game = self.sports_game_factory.create(live_mma_game)
             self.sports_game_repo.insert_or_update_sports_game(sports_game=sport_game)
+            
+        live_mls_games = self.odds_api_engine.get_mls_games_with_scores_and_odds()
+        for live_mls_game in live_mls_games:
+            sport_game = self.sports_game_factory.create(live_mls_game)
+            self.sports_game_repo.insert_or_update_sports_game(sports_game=sport_game)
+            
         logging.info("New live games added to database")
                 
         

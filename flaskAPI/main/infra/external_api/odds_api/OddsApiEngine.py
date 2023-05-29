@@ -4,6 +4,12 @@ from copy import copy
 class OddsApiEngine:
     def __init__(self, api_key):
         self.api_key = api_key
+        
+    def get_mls_games_with_odds_live(self) -> list[dict]:
+        return self._get_games_with_odds("soccer_usa_mls")
+
+    def get_mls_games_with_scores(self) -> list[dict]:
+        return self.get_mls_games_with_scores("soccer_usa_mls")
 
     def get_hockey_games_with_odds_live(self) -> list[dict]:
         return self._get_games_with_odds("icehockey_nhl")
@@ -28,6 +34,11 @@ class OddsApiEngine:
 
     def get_mma_games_with_odds(self) -> list[dict]:
         return self._get_games_with_odds("mma_mixed_martial_arts")
+    
+    def get_mls_games_with_scores_and_odds(self) -> list[dict]:
+        odds_dict_list = self.get_mls_games_with_odds_live()
+        scores_dict_list = self.get_mls_games_with_scores()
+        return self._combine_odds_and_scores(odds_dict_list, scores_dict_list)
 
     def get_mma_games_with_scores_and_odds(self) -> list[dict]:
         odds_dict_list = self.get_mma_games_with_odds()

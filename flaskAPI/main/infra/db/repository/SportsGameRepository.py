@@ -40,6 +40,9 @@ class SportsGameRepository:
 
     def get_mma_games(self) -> Array[SportsGame]:
         return [self.sports_game_schema.load(sports_game) for sports_game in self.db.find({"completed": False, "sport": "mma"})]
+    
+    def get_mls_games(self) -> Array[SportsGame]:
+        return [self.sports_game_schema.load(sports_game) for sports_game in self.db.find({"completed": False, "sport": "soccer"})]
 
     def get_by_external_id(self, external_id: str) -> SportsGame:
         try:

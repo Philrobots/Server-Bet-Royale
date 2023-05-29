@@ -20,3 +20,8 @@ class SportsGameService:
 
     def get_mma_sports_games(self) -> List[SportsGame]:
         return self.sports_game_repo.get_mma_games()
+    
+    def get_mls_sports_games(self) -> List[SportsGame]:
+        return self.sports_game_repo.get_mls_games()
+    
+    
