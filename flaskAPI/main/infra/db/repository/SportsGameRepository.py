@@ -40,7 +40,7 @@ class SportsGameRepository:
 
     def get_mma_games(self) -> Array[SportsGame]:
         return [self.sports_game_schema.load(sports_game) for sports_game in self.db.find({"completed": False, "sport": "mma"})]
-    
+
     def get_mls_games(self) -> Array[SportsGame]:
         return [self.sports_game_schema.load(sports_game) for sports_game in self.db.find({"completed": False, "sport": "soccer"})]
 
@@ -55,7 +55,7 @@ class SportsGameRepository:
 
     def delete_sports_game(self, sports_game: SportsGame) -> None:
         try:
-            self.db.delete_one({'_id': sports_game.id.to_object_id() })
+            self.db.delete_one({'_id': sports_game.id.to_object_id()})
         except ValueError:
             raise NonExistingSportsGameException
 
@@ -64,7 +64,7 @@ class SportsGameRepository:
         sport_game_id = sports_game.id
         result = self.db.replace_one(
             {'_id': sport_game_id.to_object_id()}, sports_game_dict)
-        
+
         if result.modified_count == 0:
             raise SportsGameNotUpdatedException
 
@@ -80,4 +80,5 @@ class SportsGameRepository:
             if sports_game_dict["book_makers"] is None:
                 sports_game_dict["book_makers"] = result["book_makers"]
 
-            self.db.replace_one({"external_id": sports_game_external_id}, sports_game_dict)
+            self.db.replace_one(
+                {"external_id": sports_game_external_id}, sports_game_dict)

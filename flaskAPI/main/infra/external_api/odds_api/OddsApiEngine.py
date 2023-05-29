@@ -9,7 +9,7 @@ class OddsApiEngine:
         return self._get_games_with_odds("soccer_usa_mls")
 
     def get_mls_games_with_scores(self) -> list[dict]:
-        return self.get_mls_games_with_scores("soccer_usa_mls")
+        return self._get_games_with_score("soccer_usa_mls")
 
     def get_hockey_games_with_odds_live(self) -> list[dict]:
         return self._get_games_with_odds("icehockey_nhl")
