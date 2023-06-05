@@ -24,9 +24,17 @@ class TransactionRepository:
         return [self.transaction_schema.load(transaction) for transaction in self.db.find({'user_id': user_id.to_object_id()}).sort('_id', pymongo.DESCENDING)]
     
     def remove_old_transactions(self) -> int:
-        now = datetime.now(tz=pytz.timezone('US/Eastern'))
+        now = datetime.now()
         last_month = now - timedelta(days=30)
+        string_date = last_month.strftime("%Y-%m-%d %H:%M:%S")
+
+        filter = {
+            'date_created': {
+                '$lte': string_date
+            }
+        }
         
-        results = self.db.delete_many({'date_created': {'$lt': last_month}})
+        results = self.db.delete_many(filter=filter)
+        
         return results.deleted_count
     

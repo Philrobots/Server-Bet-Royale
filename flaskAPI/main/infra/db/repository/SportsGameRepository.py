@@ -96,14 +96,8 @@ class SportsGameRepository:
                 '$lte': string_date
             }
         }
-        results = self.db.find(filter=filter)
-        number = str(len(list(results)))
         
-        logging.info("Found " + number + " games to remove")
-        logging.info("Removing games older than: " + string_date)
-
-        for sports_game in results:
-            logging.info("Removing old game: " + sports_game["_id"])
-            self.db.delete_one({"_id": sports_game["_id"]})
-
-        return len(list(results))
+        results = self.db.delete_many(filter=filter)
+        
+        return results.deleted_count
+       
