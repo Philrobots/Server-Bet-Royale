@@ -93,7 +93,9 @@ class SportsGameRepository:
         
         results = self.db.find({"game_start": {"$lt": last_month}})
         
-        logging.info("Found " + len(list(results)) + " games to remove")
+        number = str(len(list(results)))
+        
+        logging.info("Found " + number + " games to remove")
         logging.info("Removing games older than: " + str)
         
         for sports_game in results:
