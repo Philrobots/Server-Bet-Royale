@@ -87,17 +87,17 @@ class SportsGameRepository:
                 {"external_id": sports_game_external_id}, sports_game_dict)
         
     def remove_old_games(self) -> int:
-        now = datetime.now(tz=pytz.timezone('US/Eastern'))
+        now = datetime.now()
         last_month = now - timedelta(days=30)
-        
-        logging.info("Removing games older than: " + last_month.strftime("%m/%d/%Y, %H:%M:%S"))
+        str = last_month.strftime("%Y-%m-%d %H:%M:%S")
         
         results = self.db.find({"game_start": {"$lt": last_month}})
         
-        logging.info("Found " + str(results.size()) + " games to remove")
+        logging.info("Found " + str(len(list(results))) + " games to remove")
+        logging.info("Removing games older than: " + str)
         
         for sports_game in results:
-            logging.info("Removing old game: " + sports_game)
+            logging.info("Removing old game: " + sports_game["_id"])
             self.db.delete_one({"_id": sports_game["_id"]})
             
-        return results.size()
+        return len(list(results))
