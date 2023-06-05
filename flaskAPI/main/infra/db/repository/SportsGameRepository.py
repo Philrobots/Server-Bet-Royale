@@ -89,14 +89,14 @@ class SportsGameRepository:
     def remove_old_games(self) -> int:
         now = datetime.now()
         last_month = now - timedelta(days=30)
-        str = last_month.strftime("%Y-%m-%d %H:%M:%S")
+        string_date = last_month.strftime("%Y-%m-%d %H:%M:%S")
         
         results = self.db.find({"game_start": {"$lt": last_month}})
         
         number = str(len(list(results)))
         
         logging.info("Found " + number + " games to remove")
-        logging.info("Removing games older than: " + str)
+        logging.info("Removing games older than: " + string_date)
         
         for sports_game in results:
             logging.info("Removing old game: " + sports_game["_id"])
