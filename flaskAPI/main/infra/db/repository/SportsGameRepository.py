@@ -9,6 +9,7 @@ from main.infra.exception.SportsGameNotUpdatedException import SportsGameNotUpda
 from main.infra.schemas.mongo.MongoSportsGameSchema import MongoSportsGameSchema
 from datetime import datetime, timedelta
 import pytz
+import logging
 
 
 class SportsGameRepository:
@@ -89,5 +90,12 @@ class SportsGameRepository:
         now = datetime.now(tz=pytz.timezone('US/Eastern'))
         last_month = now - timedelta(days=30)
         
-        result = self.db.delete_many({"game_start": {"$lt": last_month}})
-        return result.deleted_count
+        logging.info("Removing games older than: " + last_month)
+        
+        results = self.db.find({"game_start": {"$lt": last_month}})
+        
+        for sports_game in results:
+            logging.info("Removing old game: " + sports_game)
+            self.db.delete_one({"_id": sports_game["_id"]})
+            
+        return results.size()
