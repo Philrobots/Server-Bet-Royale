@@ -90,9 +90,11 @@ class SportsGameRepository:
         now = datetime.now(tz=pytz.timezone('US/Eastern'))
         last_month = now - timedelta(days=30)
         
-        logging.info("Removing games older than: " + last_month)
+        logging.info("Removing games older than: " + last_month.strftime("%m/%d/%Y, %H:%M:%S"))
         
         results = self.db.find({"game_start": {"$lt": last_month}})
+        
+        logging.info("Found " + str(results.size()) + " games to remove")
         
         for sports_game in results:
             logging.info("Removing old game: " + sports_game)
