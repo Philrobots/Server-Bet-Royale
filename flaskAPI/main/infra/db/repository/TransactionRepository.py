@@ -5,6 +5,8 @@ from main.domain.identifiers import DomainId
 from main.infra.db.connector.MongoConnector import MongoConnector
 from main.infra.schemas.mongo.MongoTransactionSchema import MongoTransactionSchema
 from main.domain.transaction.Transaction import Transaction
+from datetime import datetime, timedelta
+import pytz
 
 class TransactionRepository:
     
@@ -20,3 +22,11 @@ class TransactionRepository:
     
     def get_transactions(self, user_id: DomainId) -> List[Transaction]:
         return [self.transaction_schema.load(transaction) for transaction in self.db.find({'user_id': user_id.to_object_id()}).sort('_id', pymongo.DESCENDING)]
+    
+    def remove_old_transactions(self) -> int:
+        now = datetime.now(tz=pytz.timezone('US/Eastern'))
+        last_month = now - timedelta(days=30)
+        
+        results = self.db.delete_many({'date_created': {'$lt': last_month}})
+        return results.deleted_count
+    

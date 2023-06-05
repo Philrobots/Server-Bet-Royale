@@ -14,3 +14,6 @@ class BetterStatsService:
     def calculate_better_stats(self, better_id: DomainId) -> BetterStats:
         transactions = self.transaction_repository.get_transactions(better_id)
         return self.better_stats_factory.create(transactions)
+    
+    def remove_old_transactions(self) -> int:
+        return self.transaction_repository.remove_old_transactions()

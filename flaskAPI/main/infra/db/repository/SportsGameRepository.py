@@ -7,6 +7,8 @@ from main.infra.db.connector.MongoConnector import MongoConnector
 from main.infra.exception.NonExistingSportsGameException import NonExistingSportsGameException
 from main.infra.exception.SportsGameNotUpdatedException import SportsGameNotUpdatedException
 from main.infra.schemas.mongo.MongoSportsGameSchema import MongoSportsGameSchema
+from datetime import datetime, timedelta
+import pytz
 
 
 class SportsGameRepository:
@@ -82,3 +84,10 @@ class SportsGameRepository:
 
             self.db.replace_one(
                 {"external_id": sports_game_external_id}, sports_game_dict)
+        
+    def remove_old_games(self) -> int:
+        now = datetime.now(tz=pytz.timezone('US/Eastern'))
+        last_month = now - timedelta(days=30)
+        
+        result = self.db.delete_many({"game_start": {"$lt": last_month}})
+        return result.deleted_count

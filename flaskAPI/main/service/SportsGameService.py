@@ -23,5 +23,8 @@ class SportsGameService:
     
     def get_mls_sports_games(self) -> List[SportsGame]:
         return self.sports_game_repo.get_mls_games()
+
+    def remove_old_games(self) -> int:
+        return self.sports_game_repo.remove_old_games()
     
     

@@ -115,7 +115,7 @@ class Context:
         self.better_stats_service = BetterStatsService(self.transaction_repo, self.better_stats_factory)
         
         self.sports_game_scheduler = SportsGameScheduler(odds_api_engine=self.odds_api_engine, sports_game_factory=self.sports_game_factory,
-                                                         sports_game_repo=self.sports_game_repo, sports_game_service=self.sports_game_service, bet_service=self.bet_service)
+                                                         sports_game_repo=self.sports_game_repo, sports_game_service=self.sports_game_service, bet_service=self.bet_service, better_stats_service=self.better_stats_service)
         self.bet_scheduler = BetScheduler(bet_service=self.bet_service, bet_repo=self.bet_repository, better_repo=self.better_repo)
         self.all_schedulers = [self.sports_game_scheduler, self.bet_scheduler]
         self.better_funds_service = BetterFundsService(self.better_repo)
