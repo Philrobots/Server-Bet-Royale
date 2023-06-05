@@ -85,21 +85,25 @@ class SportsGameRepository:
 
             self.db.replace_one(
                 {"external_id": sports_game_external_id}, sports_game_dict)
-        
+
     def remove_old_games(self) -> int:
         now = datetime.now()
         last_month = now - timedelta(days=30)
         string_date = last_month.strftime("%Y-%m-%d %H:%M:%S")
-        
-        results = self.db.find({"game_start": {"$lt": last_month}})
-        
+
+        filter = {
+            'game_start': {
+                '$lte': string_date
+            }
+        }
+        results = self.db.find(filter=filter)
         number = str(len(list(results)))
         
         logging.info("Found " + number + " games to remove")
         logging.info("Removing games older than: " + string_date)
-        
+
         for sports_game in results:
             logging.info("Removing old game: " + sports_game["_id"])
             self.db.delete_one({"_id": sports_game["_id"]})
-            
+
         return len(list(results))
