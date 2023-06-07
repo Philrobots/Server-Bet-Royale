@@ -22,8 +22,8 @@ class SportsGameScheduler:
     def is_in_range_to_not_get_new_game(self) -> bool:
         now = datetime.now(tz=pytz.timezone('US/Eastern'))
         current_time = now.strftime("%H:%M:%S")
-        start = '02:00:00'
-        end = '12:00:00'
+        start = '01:00:00'
+        end = '13:00:00'
         return current_time > start and current_time < end
 
     def remove_old_games_and_old_transactions(self) -> None:
