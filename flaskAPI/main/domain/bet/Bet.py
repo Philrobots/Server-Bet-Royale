@@ -42,6 +42,17 @@ class Bet:
 
         raise NoOpponentIdException
 
+    def get_refund_amount(self, user_id: DomainId) -> Currency:
+        for bet_amount in self.bet_amounts_home:
+            if bet_amount.better_id == user_id:
+                return bet_amount.amount
+                
+        for bet_amount in self.bet_amounts_away:
+            if bet_amount.better_id == user_id:
+                return bet_amount.amount
+        
+        return Currency(0)
+
     def get_won_amount(self, user_id: DomainId) -> Currency:
         won_amount = Currency(0)
         for bet_amount in self.bet_amounts_home:

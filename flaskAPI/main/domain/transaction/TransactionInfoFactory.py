@@ -16,16 +16,32 @@ class TransactionInfoFactory:
         return_list = []
         for transaction in transactions:
             if transaction.transaction_type == TransactionType.WON_BET:
-                return_list.append(self._create_one_won_transaction(transaction))
+                try: 
+                    return_list.append(self._create_one_won_transaction(transaction))
+                except:
+                    continue
+                
             elif transaction.transaction_type == TransactionType.LOST_BET:
 
                 corresponding_transaction = next((item for item in transactions if item.bet_id == transaction.bet_id
                                                   and item.transaction_type in (TransactionType.ACCEPT_BET, TransactionType.CREATE_BET)), None)
+                
+                if (corresponding_transaction is None):
+                    continue
 
-                if (corresponding_transaction is None or corresponding_transaction.amount is None):
-                    raise InvalidLostBetTransaction
+                if (corresponding_transaction.amount is None):
+                    continue
+                
+                try: 
+                    return_list.append(self._create_one_lost_transaction(transaction, corresponding_transaction.amount))
+                except:
+                    continue
+            elif transaction.transaction_type == TransactionType.REFUND:
+                try: 
+                    return_list.append(self._create_refund_transactions(transaction))
+                except:
+                    continue
 
-                return_list.append(self._create_one_lost_transaction(transaction, corresponding_transaction.amount))
         return return_list
 
     def _create_one_won_transaction(self, transaction: Transaction) -> TransactionInfo:
@@ -41,3 +57,12 @@ class TransactionInfoFactory:
         return TransactionInfo(transaction.transaction_id, transaction.user_id, amount,
                                transaction.transaction_type, transaction.date_created, transaction.current_balance,
                                 sports_game)
+    
+    def _create_refund_transactions(self, transaction: Transaction) -> TransactionInfo:
+        bet = self.bet_repository.get_by_id(transaction.bet_id)
+        sports_game = bet.sports_game
+        return TransactionInfo(transaction.transaction_id, transaction.user_id, bet.get_refund_amount(transaction.user_id),
+                               transaction.transaction_type, transaction.date_created, transaction.current_balance,
+                                sports_game)
+        
+        
