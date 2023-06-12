@@ -30,6 +30,7 @@ class UserService:
 
         if user.authenticate(password):
             return user.create_auth_token()
+        
         raise FailedLoginException
 
     def register(self, username, password, email, birth_date) -> Token:
