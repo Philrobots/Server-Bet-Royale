@@ -20,7 +20,7 @@ services:
       FLASK_APP: run.py
       FLASK_ENV: development
       FLASK_DEBUG: 1
-      MONGODB_CONNECTION_STRING: mongodb+srv://bet-royale-admin:Fe5BWjLwSiSP4byu@production-cluster.okz6gg9.mongodb.net/
+      MONGODB_CONNECTION_STRING: mongodb+srv://bet-royale-leader:ECWObn4uW1Hvfj1U@bet-royale-bd.k5r0uf0.mongodb.net/
       PORT: 8000
     networks:
       backend:
