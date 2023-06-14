@@ -42,5 +42,5 @@ class SportsGameResource(Resource):
             'mma': [self.sports_game_response_schema.dump(sports_game) for sports_game in mma_games],
             'baseball': [self.sports_game_response_schema.dump(sports_game) for sports_game in baseball_games],
             'soccer_mls': [self.sports_game_response_schema.dump(sports_game) for sports_game in soccer_mls_games],
-            'nfl_football': [self.sports_game_response_schema.dump(sports_game) for sports_game in nfl_games]
+            'nfl_football': [self.sports_game_response_schema.dump(sports_game) for sports_game in nfl_games[0:6]]
         }
