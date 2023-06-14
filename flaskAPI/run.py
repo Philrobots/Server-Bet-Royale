@@ -212,6 +212,6 @@ API.add_resource(ChatResource, "/chat", resource_class_kwargs=context.create_con
 API.add_resource(SportsGameResource, "/sports", resource_class_kwargs=context.create_context_sports_game_resource_class_kwargs())
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)), debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)), threaded=True)
     
     
