@@ -37,7 +37,7 @@ class SportsGameScheduler:
         if self.is_in_range_to_not_get_new_game():
             return
         
-        live_nfl_games = self.odds_api_engine.get_nfl_games_with_scores_and_odds()
+        live_nfl_games = []  # self.odds_api_engine.get_nfl_games_with_scores_and_odds() NO  NEW NFL GAMES !!
         
         for live_nfl_game in live_nfl_games:
             sport_game = self.sports_game_factory.create(live_nfl_game)
