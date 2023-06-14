@@ -31,6 +31,9 @@ class SportsGameRepository:
             return self.sports_game_schema.load(result)
         except ValueError:
             raise NonExistingSportsGameException
+        
+    def get_nfl_games(self) -> Array[SportsGame]:
+        return [self.sports_game_schema.load(sports_game) for sports_game in self.db.find({"completed": False, "sport": "americanfootball"})]
 
     def get_hockey_games(self) -> Array[SportsGame]:
         return [self.sports_game_schema.load(sports_game) for sports_game in self.db.find({"completed": False, "sport": "icehockey"})]

@@ -8,6 +8,9 @@ from main.infra.db.repository.SportsGameRepository import SportsGameRepository
 class SportsGameService:
     def __init__(self, sports_game_repo : SportsGameRepository):
         self.sports_game_repo = sports_game_repo
+    
+    def get_nfl_games(self) -> List[SportsGame]:
+        return self.sports_game_repo.get_nfl_games()
 
     def get_hockey_sports_games(self) -> List[SportsGame]:
         return self.sports_game_repo.get_hockey_games()

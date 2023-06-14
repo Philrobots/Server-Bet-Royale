@@ -36,6 +36,13 @@ class SportsGameScheduler:
     def get_new_live_games(self) -> None:
         if self.is_in_range_to_not_get_new_game():
             return
+        
+        live_nfl_games = self.odds_api_engine.get_nfl_games_with_scores_and_odds()
+        
+        for live_nfl_game in live_nfl_games:
+            sport_game = self.sports_game_factory.create(live_nfl_game)
+            self.sports_game_repo.insert_or_update_sports_game(
+                sports_game=sport_game)
 
         live_hockey_games =  [] #self.odds_api_engine.get_hockey_games_with_scores_and_odds() NO NHL GAMES !!!
 
@@ -47,8 +54,8 @@ class SportsGameScheduler:
         live_basketball_games = [] #self.odds_api_engine.get_nba_games_with_scores_and_odds() NO NBA GAMES !!!
 
         for live_basketball_game in live_basketball_games:
-            sport_game = self.sports_game_factory.create(live_basketball_game)
-            self.sports_game_repo.insert_or_update_sports_game(
+            sport_game = self.sportsnsert_or_update_s_game_factory.create(live_basketball_game)
+            self.sports_game_repo.iports_game(
                 sports_game=sport_game)
 
         live_mlb_games = self.odds_api_engine.get_mlb_games_with_scores_and_odds()
