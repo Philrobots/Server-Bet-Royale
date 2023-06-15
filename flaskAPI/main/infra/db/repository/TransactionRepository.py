@@ -21,11 +21,11 @@ class TransactionRepository:
         self.db.insert_one(transaction_dict)
 
     def get_transactions(self, user_id: DomainId) -> List[Transaction]:
-        return [self.transaction_schema.load(transaction) for transaction in self.db.find({'user_id': user_id.to_object_id()}, limit=6).sort('_id', pymongo.DESCENDING)]
+        return [self.transaction_schema.load(transaction) for transaction in self.db.find({'user_id': user_id.to_object_id()}).sort('_id', pymongo.DESCENDING)]
 
     def remove_old_transactions(self) -> int:
         now = datetime.now()
-        last_month = now - timedelta(days=30)
+        last_month = now - timedelta(days=21)
         string_date = last_month.strftime("%Y-%m-%d %H:%M:%S")
 
         filter = {
