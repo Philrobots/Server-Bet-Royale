@@ -51,7 +51,7 @@ class SportsGameScheduler:
             self.sports_game_repo.insert_or_update_sports_game(
                 sports_game=sport_game)
 
-        live_basketball_games = [] #self.odds_api_engine.get_nba_games_with_scores_and_odds() NO NBA GAMES !!!
+        live_basketball_games = self.odds_api_engine.get_nba_games_with_scores_and_odds() 
 
         for live_basketball_game in live_basketball_games:
             sport_game = self.sportsnsert_or_update_s_game_factory.create(live_basketball_game)
