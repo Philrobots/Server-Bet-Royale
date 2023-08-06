@@ -25,7 +25,7 @@ class TransactionRepository:
 
     def remove_old_transactions(self) -> int:
         now = datetime.now()
-        last_month = now - timedelta(days=21)
+        last_month = now - timedelta(days=14)
         string_date = last_month.strftime("%Y-%m-%d %H:%M:%S")
 
         filter = {

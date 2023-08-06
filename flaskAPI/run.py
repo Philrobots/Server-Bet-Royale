@@ -12,6 +12,7 @@ from main.api.resources.MMASportsGameResource import MMASportsGameResource
 from main.api.resources.PingResource import PingResource
 from main.api.resources.RegisterResource import RegisterResource
 from main.api.resources.HockeySportsGameResource import HockeySportsGameResource
+from main.api.resources.SportsKey import SportsKey
 from main.api.resources.TransactionResource import TransactionResource
 from main.api.resources.UserBetResource import UserBetResource
 from main.api.resources.UserResource import UserResource
@@ -68,6 +69,7 @@ class Context:
 
     def __init__(self):
         self.mongo_connector = MongoConnector()
+        self.sports_key = SportsKey()
 
         self.user_auth_schema = MongoUserAuthSchema(app.config["SECRET_KEY"])
         self.mongo_sports_game_schema = MongoSportsGameSchema()
@@ -81,7 +83,7 @@ class Context:
         self.transaction_schema = MongoTransactionSchema()
         self.add_better_funds_schema = AddBetterFundsRequestSchema()
         
-        self.sports_game_repo = SportsGameRepository(self.mongo_sports_game_schema, self.mongo_connector)
+        self.sports_game_repo = SportsGameRepository(self.mongo_sports_game_schema, self.mongo_connector, self.sports_key)
         self.transaction_repo = TransactionRepository(transaction_schema=self.transaction_schema,
                                                       connector=self.mongo_connector)
 
@@ -96,7 +98,7 @@ class Context:
         
         self.token_decoder = TokenDecoder(app.config["SECRET_KEY"])
         self.datetime_helper = DateTimeHelper()
-        self.odds_api_engine = OddsApiEngine(app.config["ODDS_API_KEY"])
+        self.odds_api_engine = OddsApiEngine(app.config["ODDS_API_KEY"], self.sports_key)
         
         self.better_factory = BetterFactory(self.datetime_helper, self.transaction_handler)
         self.user_factory = UserAuthFactory(self.user_repo, app.config["SECRET_KEY"])
@@ -115,7 +117,7 @@ class Context:
         self.better_stats_service = BetterStatsService(self.transaction_repo, self.better_stats_factory)
         
         self.sports_game_scheduler = SportsGameScheduler(odds_api_engine=self.odds_api_engine, sports_game_factory=self.sports_game_factory,
-                                                         sports_game_repo=self.sports_game_repo, sports_game_service=self.sports_game_service, bet_service=self.bet_service, better_stats_service=self.better_stats_service)
+                                                         sports_game_repo=self.sports_game_repo, sports_game_service=self.sports_game_service, bet_service=self.bet_service, better_stats_service=self.better_stats_service, sports_key=self.sports_key)
         self.bet_scheduler = BetScheduler(bet_service=self.bet_service, bet_repo=self.bet_repository, better_repo=self.better_repo)
         self.all_schedulers = [self.sports_game_scheduler, self.bet_scheduler]
         self.better_funds_service = BetterFundsService(self.better_repo)
@@ -140,7 +142,7 @@ class Context:
         return {"sports_game_service": self.sports_game_service, "sports_game_response_schema" : self.sports_game_response_schema}
     
     def create_context_sports_game_resource_class_kwargs(self):
-        return {"sports_game_service": self.sports_game_service, "sports_game_response_schema" : self.sports_game_response_schema}
+        return {"sports_game_service": self.sports_game_service, "sports_game_response_schema" : self.sports_game_response_schema, "sports_key": self.sports_key}
 
     def create_context_basketball_sports_game_resource_class_kwargs(self):
         return {"sports_game_service": self.sports_game_service, "sports_game_response_schema" : self.sports_game_response_schema}

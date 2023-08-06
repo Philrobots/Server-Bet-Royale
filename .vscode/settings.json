@@ -8,5 +8,11 @@
     ],
     "python.testing.pytestEnabled": false,
     "python.testing.unittestEnabled": true,
-    "python.analysis.extraPaths": ["./flaskAPI"]
+    "python.analysis.extraPaths": [
+        "./flaskAPI"
+    ],
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.autopep8"
+    },
+    "python.formatting.provider": "none"
 }

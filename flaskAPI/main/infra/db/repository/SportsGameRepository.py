@@ -1,6 +1,7 @@
 
 
 from ctypes import Array
+from main.api.resources.SportsKey import SportsKey
 from main.domain.identifiers.DomainId import DomainId
 from main.domain.sports_game.SportsGame import SportsGame
 from main.infra.db.connector.MongoConnector import MongoConnector
@@ -8,16 +9,15 @@ from main.infra.exception.NonExistingSportsGameException import NonExistingSport
 from main.infra.exception.SportsGameNotUpdatedException import SportsGameNotUpdatedException
 from main.infra.schemas.mongo.MongoSportsGameSchema import MongoSportsGameSchema
 from datetime import datetime, timedelta
-import pytz
-import logging
 
 
 class SportsGameRepository:
 
-    def __init__(self, sports_game_schema: MongoSportsGameSchema, connector: MongoConnector):
+    def __init__(self, sports_game_schema: MongoSportsGameSchema, connector: MongoConnector, sports_key: SportsKey):
         self.connector = connector
         self.sports_game_schema = sports_game_schema
         self.db = self.connector.main.sports_game
+        self.sports_key = sports_key
 
     def add_sports_game(self, sports_game: SportsGame):
         sports_game_dict = self.sports_game_schema.dump(sports_game)
@@ -36,22 +36,22 @@ class SportsGameRepository:
         return [self.sports_game_schema.load(sports_game) for sports_game in self.db.find({"completed": False })]
         
     def get_nfl_games(self) -> Array[SportsGame]:
-        return [self.sports_game_schema.load(sports_game) for sports_game in self.db.find({"completed": False, "sport": "americanfootball"})]
+        return [self.sports_game_schema.load(sports_game) for sports_game in self.db.find({"completed": False, "sport": self.sports_key.american_football_nfl})]
 
     def get_hockey_games(self) -> Array[SportsGame]:
-        return [self.sports_game_schema.load(sports_game) for sports_game in self.db.find({"completed": False, "sport": "icehockey"})]
+        return [self.sports_game_schema.load(sports_game) for sports_game in self.db.find({"completed": False, "sport": self.sports_key.ice_hockey_nhl})]
 
     def get_basketball_games(self) -> Array[SportsGame]:
-        return [self.sports_game_schema.load(sports_game) for sports_game in self.db.find({"completed": False, "sport": "basketball"})]
+        return [self.sports_game_schema.load(sports_game) for sports_game in self.db.find({"completed": False, "sport": self.sports_key.basketball_nba})]
 
     def get_mlb_games(self) -> Array[SportsGame]:
-        return [self.sports_game_schema.load(sports_game) for sports_game in self.db.find({"completed": False, "sport": "baseball"})]
+        return [self.sports_game_schema.load(sports_game) for sports_game in self.db.find({"completed": False, "sport": self.sports_key.baseball_mlb})]
 
     def get_mma_games(self) -> Array[SportsGame]:
-        return [self.sports_game_schema.load(sports_game) for sports_game in self.db.find({"completed": False, "sport": "mma"})]
+        return [self.sports_game_schema.load(sports_game) for sports_game in self.db.find({"completed": False, "sport": self.sports_key.mma})]
 
     def get_mls_games(self) -> Array[SportsGame]:
-        return [self.sports_game_schema.load(sports_game) for sports_game in self.db.find({"completed": False, "sport": "soccer"})]
+        return [self.sports_game_schema.load(sports_game) for sports_game in self.db.find({"completed": False, "sport": self.sports_key.soccer_mls})]
 
     def get_by_external_id(self, external_id: str) -> SportsGame:
         try:
@@ -89,12 +89,13 @@ class SportsGameRepository:
             if sports_game_dict["book_makers"] is None:
                 sports_game_dict["book_makers"] = result["book_makers"]
 
+
             self.db.replace_one(
-                {"external_id": sports_game_external_id}, sports_game_dict)
+                {"external_id": sports_game_external_id }, sports_game_dict)
 
     def remove_old_games(self) -> int:
         now = datetime.now()
-        last_month = now - timedelta(days=30)
+        last_month = now - timedelta(days=15)
         string_date = last_month.strftime("%Y-%m-%d %H:%M:%S")
 
         filter = {

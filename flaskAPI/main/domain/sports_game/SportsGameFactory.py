@@ -31,7 +31,7 @@ class SportsGameFactory:
             score = Score(self._find_team_score(sports_response["scores"], sports_response["home_team"]), self._find_team_score(sports_response["scores"], sports_response["away_team"]))
 
         return SportsGame(DomainId(), sports_response["id"], sports_response["home_team"], sports_response["away_team"], 
-                self.date_time_helper.create_datetime_from_iso(sports_response["commence_time"]), None, sports_response["sport_key"].split("_")[0],
+                self.date_time_helper.create_datetime_from_iso(sports_response["commence_time"]), None, sports_response["sport_key"],
                 sports_response["sport_title"], score, completed=sports_response["completed"], book_makers=book_makers)
 
                 
