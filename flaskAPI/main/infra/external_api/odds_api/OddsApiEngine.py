@@ -1,76 +1,25 @@
 import requests
 from copy import copy
+from main.api.resources.SportsKey import SportsKey
 
 
 class OddsApiEngine:
-    def __init__(self, api_key):
-        self.api_key = api_key
-        
-    def get_nfl_games_with_odds_live(self) -> list[dict]:
-        return self._get_games_with_odds("americanfootball_nfl")
-
-    def get_nfl_games_with_scores(self) -> list[dict]:
-        return self._get_games_with_score("americanfootball_nfl")
-
-    def get_mls_games_with_odds_live(self) -> list[dict]:
-        return self._get_games_with_odds("soccer_usa_mls")
-
-    def get_mls_games_with_scores(self) -> list[dict]:
-        return self._get_games_with_score("soccer_usa_mls")
-
-    def get_hockey_games_with_odds_live(self) -> list[dict]:
-        return self._get_games_with_odds("icehockey_nhl")
-
-    def get_old_hockey_games_with_scores(self) -> list[dict]:
-        return self._get_games_with_score("icehockey_nhl")
-
-    def get_nba_games_with_scores(self) -> list[dict]:
-        return self._get_games_with_score("basketball_nba")
-
-    def get_nba_games_with_odds(self) -> list[dict]:
-        return self._get_games_with_odds("basketball_nba")
-
-    def get_mlb_games_with_scores(self) -> list[dict]:
-        return self._get_games_with_score("baseball_mlb")
-
-    def get_mlb_games_with_odds(self) -> list[dict]:
-        return self._get_games_with_odds("baseball_mlb")
-
-    def get_mma_games_with_scores(self) -> list[dict]:
-        return self._get_games_with_score("mma_mixed_martial_arts")
-
-    def get_mma_games_with_odds(self) -> list[dict]:
-        return self._get_games_with_odds("mma_mixed_martial_arts")
     
-    def get_nfl_games_with_scores_and_odds(self) -> list[dict]:
-        odds_dict_list = self.get_nfl_games_with_odds_live()
-        scores_dict_list = self.get_nfl_games_with_scores()
-        return self._combine_odds_and_scores(odds_dict_list, scores_dict_list)        
+    def __init__(self, api_key, sports_key: SportsKey):
+        self.api_key = api_key
+        self.sports_key = sports_key
+        
+        
+    def get_sports_games_with_odds_live(self, sport_key: str) -> list[dict]:
+        return self._get_games_with_odds(sports_key=sport_key)
 
-    def get_mls_games_with_scores_and_odds(self) -> list[dict]:
-        odds_dict_list = self.get_mls_games_with_odds_live()
-        scores_dict_list = self.get_mls_games_with_scores()
-        return self._combine_odds_and_scores(odds_dict_list, scores_dict_list)
-
-    def get_mma_games_with_scores_and_odds(self) -> list[dict]:
-        odds_dict_list = self.get_mma_games_with_odds()
-        scores_dict_list = self.get_mma_games_with_scores()
-        return self._combine_odds_and_scores(odds_dict_list, scores_dict_list)
-
-    def get_hockey_games_with_scores_and_odds(self) -> list[dict]:
-        odds_dict_list = self.get_hockey_games_with_odds_live()
-        scores_dict_list = self.get_old_hockey_games_with_scores()
-        return self._combine_odds_and_scores(odds_dict_list, scores_dict_list)
-
-    def get_nba_games_with_scores_and_odds(self) -> list[dict]:
-        odds_dict_list = self.get_nba_games_with_odds()
-        scores_dict_list = self.get_nba_games_with_scores()
-        return self._combine_odds_and_scores(odds_dict_list, scores_dict_list)
-
-    def get_mlb_games_with_scores_and_odds(self) -> list[dict]:
-        odds_dict_list = self.get_mlb_games_with_odds()
-        scores_dict_list = self.get_mlb_games_with_scores()
-        return self._combine_odds_and_scores(odds_dict_list, scores_dict_list)
+    def get_sports_games_with_scores(self, sport_key: str) -> list[dict]:
+        return self._get_games_with_score(sports_key=sport_key)
+    
+    def get_sports_game_with_odds_and_scores(self, sport_key: str) -> list[dict]:
+        sports_game_with_odds = self.get_sports_games_with_odds_live(sport_key)
+        sports_game_with_score = self.get_sports_games_with_scores(sport_key)
+        return self._combine_odds_and_scores(sports_game_with_odds, sports_game_with_score)
 
     def _combine_odds_and_scores(self, odds_dict_list, scores_dict_list):
         output = copy(scores_dict_list)

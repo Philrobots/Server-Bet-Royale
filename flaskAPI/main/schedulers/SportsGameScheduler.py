@@ -1,4 +1,5 @@
 import logging
+from main.api.resources.SportsKey import SportsKey
 from main.domain.sports_game.SportsGameFactory import SportsGameFactory
 from main.infra.db.repository.SportsGameRepository import SportsGameRepository
 from main.infra.external_api.odds_api.OddsApiEngine import OddsApiEngine
@@ -11,13 +12,14 @@ import pytz
 
 class SportsGameScheduler:
 
-    def __init__(self, odds_api_engine: OddsApiEngine, sports_game_factory: SportsGameFactory, sports_game_repo: SportsGameRepository, sports_game_service: SportsGameService, bet_service: BetService, better_stats_service: BetterStatsService) -> None:
+    def __init__(self, odds_api_engine: OddsApiEngine, sports_game_factory: SportsGameFactory, sports_game_repo: SportsGameRepository, sports_game_service: SportsGameService, bet_service: BetService, better_stats_service: BetterStatsService, sports_key: SportsKey) -> None:
         self.odds_api_engine = odds_api_engine
         self.sports_game_factory = sports_game_factory
         self.sports_game_repo = sports_game_repo
         self.sports_game_service = sports_game_service
         self.bet_service = bet_service
         self.better_stats_service = better_stats_service
+        self.sports_key = sports_key
 
     def is_in_range_to_not_get_new_game(self) -> bool:
         now = datetime.now(tz=pytz.timezone('US/Eastern'))
@@ -36,49 +38,17 @@ class SportsGameScheduler:
     def get_new_live_games(self) -> None:
         if self.is_in_range_to_not_get_new_game():
             return
-        
-        live_nfl_games = []  # self.odds_api_engine.get_nfl_games_with_scores_and_odds() NO  NEW NFL GAMES !!
-        
-        for live_nfl_game in live_nfl_games:
-            sport_game = self.sports_game_factory.create(live_nfl_game)
-            self.sports_game_repo.insert_or_update_sports_game(
-                sports_game=sport_game)
 
-        live_hockey_games =  [] #self.odds_api_engine.get_hockey_games_with_scores_and_odds() NO NHL GAMES !!!
+        active_sports = self.sports_key.get_active_sports()
 
-        for live_hockey_game in live_hockey_games:
-            sport_game = self.sports_game_factory.create(live_hockey_game)
-            self.sports_game_repo.insert_or_update_sports_game(
-                sports_game=sport_game)
-
-        live_basketball_games = self.odds_api_engine.get_nba_games_with_scores_and_odds() 
-
-        for live_basketball_game in live_basketball_games:
-            sport_game = self.sportsnsert_or_update_s_game_factory.create(live_basketball_game)
-            self.sports_game_repo.iports_game(
-                sports_game=sport_game)
-
-        live_mlb_games = self.odds_api_engine.get_mlb_games_with_scores_and_odds()
-
-        for live_mlb_game in live_mlb_games:
-            sport_game = self.sports_game_factory.create(live_mlb_game)
-            self.sports_game_repo.insert_or_update_sports_game(
-                sports_game=sport_game)
-        
-        logging.info('New Baseball games added to database', len(live_mlb_games))
-
-        live_mma_games = self.odds_api_engine.get_mma_games_with_scores_and_odds()
-        for live_mma_game in live_mma_games:
-            sport_game = self.sports_game_factory.create(live_mma_game)
-            self.sports_game_repo.insert_or_update_sports_game(
-                sports_game=sport_game)
-
-        live_mls_games = self.odds_api_engine.get_mls_games_with_scores_and_odds()
-        for live_mls_game in live_mls_games:
-            sport_game = self.sports_game_factory.create(live_mls_game)
-            self.sports_game_repo.insert_or_update_sports_game(
-                sports_game=sport_game)
-        
-        logging.info('New MLS games added to database', len(live_mls_games))
+        for active_sport in active_sports:
+            logging.info(
+                "New live game added to database with sport key: " + active_sport)
+            live_sports_game = self.odds_api_engine.get_sports_game_with_odds_and_scores(
+                sport_key=active_sport)
+            for live_sport_game in live_sports_game:
+                sport_game = self.sports_game_factory.create(live_sport_game)
+                self.sports_game_repo.insert_or_update_sports_game(
+                    sports_game=sport_game)
 
         logging.info("New live games added to database")
