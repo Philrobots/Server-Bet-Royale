@@ -1,2 +1,2 @@
 #! bin/sh
-gunicorn -w 1 --threads=12  --limit-request-line 0  --bind 0.0.0.0:8000 --chdir /flask run:app
+gunicorn -w 1 --threads=15  --limit-request-line 0  --bind 0.0.0.0:8000 --chdir /flask run:app
