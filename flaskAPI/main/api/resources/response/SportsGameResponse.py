@@ -16,8 +16,11 @@ class SportsGameResponse:
                 setattr(self, sport_game.sport, [])
                 sport_key_attribute = getattr(self, sport_game.sport)
 
-            sport_key_attribute.append(
-                self.sports_game_response_schema.dump(sport_game))
+
+
+            if len(sport_key_attribute) <= 10:
+                sport_key_attribute.append(
+                    self.sports_game_response_schema.dump(sport_game))
 
     def get_games(self):
         return self.__str__()
