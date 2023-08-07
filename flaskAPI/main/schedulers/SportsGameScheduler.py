@@ -36,8 +36,8 @@ class SportsGameScheduler:
         logging.info(f"Removed {transactions_remove} old transactions")
 
     def get_new_live_games(self) -> None:
-        if self.is_in_range_to_not_get_new_game():
-            return
+       # if self.is_in_range_to_not_get_new_game():
+        #    return
 
         active_sports = self.sports_key.get_active_sports()
 
