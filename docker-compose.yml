@@ -21,6 +21,8 @@ services:
       FLASK_ENV: development
       FLASK_DEBUG: 1
       MONGODB_CONNECTION_STRING: mongodb+srv://bet-royale-admin:Fe5BWjLwSiSP4byu@production-cluster.okz6gg9.mongodb.net/
+      STRIPE_SK: sk_test_51NcYZ0JTroufWuPlGiZE4khtG1MACqBCx5u1FzMeaf86KbsDes8HNLPfNrk22udkH0Gk8GO2lwkj69hyT4wlEilD00NUdtSCOo
+      CLIENT_DOMAIN: http://localhost:3000
       PORT: 8000
     networks:
       backend:

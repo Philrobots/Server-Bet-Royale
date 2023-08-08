@@ -18,6 +18,7 @@ from main.api.resources.UserBetResource import UserBetResource
 from main.api.resources.UserResource import UserResource
 from main.api.resources.ChatResource import ChatResource
 from main.api.resources.SportsGameResource import SportsGameResource
+from main.api.resources.payment.PaymentResource import PaymentResource
 
 from main.api.schemas.response.BetterStatsResponseSchema import BetterStatsResponseSchema
 from main.domain.better_stats.BetterStatsFactory import BetterStatsFactory
@@ -144,6 +145,9 @@ class Context:
     def create_context_sports_game_resource_class_kwargs(self):
         return {"sports_game_service": self.sports_game_service, "sports_game_response_schema" : self.sports_game_response_schema, "sports_key": self.sports_key}
 
+    def create_context_payment_resource_class_krwargs(self):
+        return {}
+
     def create_context_basketball_sports_game_resource_class_kwargs(self):
         return {"sports_game_service": self.sports_game_service, "sports_game_response_schema" : self.sports_game_response_schema}
 
@@ -212,6 +216,7 @@ API.add_resource(TransactionResource, "/transactions", resource_class_kwargs=con
 API.add_resource(LeaderboardResource, "/leaderboard", resource_class_kwargs=context.create_context_leaderboard_resource_class_kwargs())
 API.add_resource(ChatResource, "/chat", resource_class_kwargs=context.create_context_chat_resource_class_kwargs())
 API.add_resource(SportsGameResource, "/sports", resource_class_kwargs=context.create_context_sports_game_resource_class_kwargs())
+API.add_resource(PaymentResource, "/payment", resource_class_kwargs=context.create_context_payment_resource_class_krwargs())
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)), threaded=True)
