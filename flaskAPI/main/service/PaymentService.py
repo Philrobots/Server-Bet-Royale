@@ -20,6 +20,8 @@ class PaymentService:
         purchase = self.purchase_factory.create(create_purchase_info)
         self.purchase_repository.create_purchase(purchase)
         
+        self.purchase_repository.verify_order_id_is_unique(purchase.order_id)
+        
         better = self.better_repository.get_by_id(user_id)
         better.add_funds(purchase.royale_coin_gain)
         self.better_repository.update_better(better)

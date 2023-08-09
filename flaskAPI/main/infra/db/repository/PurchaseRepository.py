@@ -1,3 +1,5 @@
+import logging
+from main.domain.identifiers.DomainId import DomainId
 from main.domain.purchase.Purchase import Purchase
 from main.infra.schemas.mongo.MongoPurchaseSchema import MongoPurchaseSchema
 from main.infra.db.connector.MongoConnector import MongoConnector
@@ -16,3 +18,9 @@ class PurchaseRepository:
     
     def get_purchases(self) -> list[Purchase]:
         return [self.mongo_purchase_schema.load(purchase) for purchase in self.db.find()]
+
+    def verify_order_id_is_unique(self, order_id: str):
+        purchase = self.db.find({'paypal_id': order_id})
+        logging.info(purchase)
+        if (purchase is not None):
+            raise Exception("Paypal order already exists")
