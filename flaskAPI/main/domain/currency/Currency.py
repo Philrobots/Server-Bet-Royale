@@ -3,9 +3,9 @@
 
 class Currency:
 
-    def __init__(self, amount: float):
+    def __init__(self, amount: float, currency_str: str = "CAD"):
         self.amount = amount
-        self.currency_str = "CAD"
+        self.currency_str = currency_str
 
     def __add__(self, other: "Currency"):
         return Currency(self.amount + other.amount)
