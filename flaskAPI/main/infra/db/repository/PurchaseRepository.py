@@ -19,8 +19,10 @@ class PurchaseRepository:
     def get_purchases(self) -> list[Purchase]:
         return [self.mongo_purchase_schema.load(purchase) for purchase in self.db.find()]
 
-    def verify_order_id_is_unique(self, order_id: str):
-        purchase = self.db.find({'paypal_id': order_id})
-        logging.info(purchase)
-        if (purchase is not None):
+    def verify_if_order_has_already_been_paid(self, order_id: str):    
+        purchase = self.db.find({'order_id': order_id})
+        results = list(purchase)
+        
+        if (len(results) > 0):
             raise Exception("Paypal order already exists")
+            

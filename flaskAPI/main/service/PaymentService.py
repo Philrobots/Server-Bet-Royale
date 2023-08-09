@@ -1,9 +1,12 @@
+import logging
 from main.domain.identifiers.DomainId import DomainId
 from main.domain.purchase.CreatePurchaseInfo import CreatePurchaseInfo
 from main.domain.purchase.Purchase import Purchase
 from main.domain.purchase.PurchaseFactory import PurchaseFactory
 from main.infra.db.repository.BetterRepository import BetterRepository
 from main.infra.db.repository.PurchaseRepository import PurchaseRepository
+import requests
+
 
 
 class PaymentService:
@@ -18,13 +21,20 @@ class PaymentService:
     
     def create_payment(self, user_id: DomainId, create_purchase_info: CreatePurchaseInfo) -> Purchase:
         purchase = self.purchase_factory.create(create_purchase_info)
-        self.purchase_repository.create_purchase(purchase)
         
-        self.purchase_repository.verify_order_id_is_unique(purchase.order_id)
+        self.purchase_repository.verify_if_order_has_already_been_paid(purchase.order_id)
+        self.verify_if_paypal_transaction_exist(purchase.order_id)
         
         better = self.better_repository.get_by_id(user_id)
         better.add_funds(purchase.royale_coin_gain)
         self.better_repository.update_better(better)
+        self.purchase_repository.create_purchase(purchase)
         
         return purchase
+
+    def verify_if_paypal_transaction_exist(self, order_id: str):
+        pass
+        
+        
+
         
