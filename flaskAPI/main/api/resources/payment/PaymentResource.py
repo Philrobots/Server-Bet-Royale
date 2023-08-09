@@ -21,8 +21,8 @@ class PaymentResource(Resource):
                     },
                 ],
                 mode='payment',
-                success_url=self.domain + '/success',
-                cancel_url=self.domain + '/cancel',
+                success_url=self.domain + '/success?session_id={CHECKOUT_SESSION_ID}',
+                cancel_url=self.domain + '/shop',
             ))
         except Exception as e:
             return str(e)
