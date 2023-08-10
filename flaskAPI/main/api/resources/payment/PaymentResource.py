@@ -30,6 +30,8 @@ class PaymentResource(Resource):
         create_payment_info: CreatePurchaseInfo = self.create_purchase_request_schema.load(create_payment_dict)
         create_payment_info.set_user_id(user_id)
         
-        purchase = self.payment_service.create_payment(user_id, create_payment_info)
-        
-        return self.purchase_response_schema.dump(purchase)
+        try:
+            purchase = self.payment_service.create_payment(user_id, create_payment_info)
+            return self.purchase_response_schema.dump(purchase)
+        except Exception as e:
+            return jsonify({"Error": str(e)})

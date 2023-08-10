@@ -35,6 +35,7 @@ from main.service.BetterFundsService import BetterFundsService
 from main.domain.sports_game.bookmakers.BookMakersFactory import BookMakersFactory
 from main.schedulers.SportsGameScheduler import SportsGameScheduler
 from main.service.PaymentService import PaymentService
+from main.service.PaypalService import PaypalService
 from pymongo import errors
 from main.api.schemas.request.CreateBetRequestSchema import CreateBetRequestSchema
 from main.api.schemas.response.BetResponseSchema import BetResponseSchema
@@ -75,6 +76,7 @@ import logging
 class Context:
 
     def __init__(self):
+        logging.info(app.config)
         self.mongo_connector = MongoConnector()
         self.sports_key = SportsKey()
         self.create_purchase_request_schema = CreatePurchaseRequestSchema()
@@ -122,11 +124,15 @@ class Context:
         self.app_setting_repo = AppSettingRepository(self.app_setting_schema, self.mongo_connector)
         self.purchase_repository = PurchaseRepository(self.purchase_schema, self.mongo_connector)
 
+        self.paypal_service = PaypalService(app.config["PAYPAL_API_URL"], app.config["PAYPAL_API_TOKEN"])
         self.user_service = UserService(self.user_repo, self.user_factory, self.better_repo, self.better_factory)
         self.sports_game_service = SportsGameService(self.sports_game_repo)
         self.bet_service = BetService(self.better_repo, self.sports_game_repo, self.bet_factory, self.bet_repository, self.bet_amount_factory)
         self.better_stats_service = BetterStatsService(self.transaction_repo, self.better_stats_factory)
-        self.payment_service = PaymentService(purchase_repository=self.purchase_repository, better_repository=self.better_repo, purchase_factory=self.purchase_factory)
+        self.payment_service = PaymentService(purchase_repository=self.purchase_repository,
+                                              better_repository=self.better_repo, 
+                                              purchase_factory=self.purchase_factory, 
+                                              paypalService=self.paypal_service)
         
         self.sports_game_scheduler = SportsGameScheduler(odds_api_engine=self.odds_api_engine, sports_game_factory=self.sports_game_factory,
                                                          sports_game_repo=self.sports_game_repo, sports_game_service=self.sports_game_service, bet_service=self.bet_service, better_stats_service=self.better_stats_service, sports_key=self.sports_key)

@@ -7,14 +7,17 @@ from main.infra.db.repository.BetterRepository import BetterRepository
 from main.infra.db.repository.PurchaseRepository import PurchaseRepository
 import requests
 
+from main.service.PaypalService import PaypalService
+
 
 
 class PaymentService:
     
-    def __init__(self, purchase_repository: PurchaseRepository, better_repository: BetterRepository, purchase_factory: PurchaseFactory):
+    def __init__(self, purchase_repository: PurchaseRepository, better_repository: BetterRepository, purchase_factory: PurchaseFactory, paypalService: PaypalService):
         self.purchase_repository = purchase_repository
         self.purchase_factory = purchase_factory
         self.better_repository = better_repository
+        self.paypal_service = paypalService
     
     def findAll(self) -> list[Purchase]:
         return self.purchase_repository.get_purchases()
@@ -23,7 +26,7 @@ class PaymentService:
         purchase = self.purchase_factory.create(create_purchase_info)
         
         self.purchase_repository.verify_if_order_has_already_been_paid(purchase.order_id)
-        self.verify_if_paypal_transaction_exist(purchase.order_id)
+        self.paypal_service.verify_if_order_id_exist(purchase.order_id)
         
         better = self.better_repository.get_by_id(user_id)
         better.add_funds(purchase.royale_coin_gain)
@@ -31,10 +34,4 @@ class PaymentService:
         self.purchase_repository.create_purchase(purchase)
         
         return purchase
-
-    def verify_if_paypal_transaction_exist(self, order_id: str):
-        pass
-        
-        
-
         
