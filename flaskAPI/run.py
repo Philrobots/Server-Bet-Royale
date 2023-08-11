@@ -124,7 +124,7 @@ class Context:
         self.app_setting_repo = AppSettingRepository(self.app_setting_schema, self.mongo_connector)
         self.purchase_repository = PurchaseRepository(self.purchase_schema, self.mongo_connector)
 
-        self.paypal_service = PaypalService(app.config["PAYPAL_API_URL"], app.config["PAYPAL_API_TOKEN"])
+        self.paypal_service = PaypalService(app.config["PAYPAL_API_URL"], app.config["PAYPAL_CLIENT_ID"], app.config["PAYPAL_SECRET"])
         self.user_service = UserService(self.user_repo, self.user_factory, self.better_repo, self.better_factory)
         self.sports_game_service = SportsGameService(self.sports_game_repo)
         self.bet_service = BetService(self.better_repo, self.sports_game_repo, self.bet_factory, self.bet_repository, self.bet_amount_factory)

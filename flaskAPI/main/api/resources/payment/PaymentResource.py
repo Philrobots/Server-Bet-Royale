@@ -34,4 +34,4 @@ class PaymentResource(Resource):
             purchase = self.payment_service.create_payment(user_id, create_payment_info)
             return self.purchase_response_schema.dump(purchase)
         except Exception as e:
-            return jsonify({"Error": str(e)})
+            return str(e), 400

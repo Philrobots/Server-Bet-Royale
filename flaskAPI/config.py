@@ -7,7 +7,8 @@ class Config(object):
     ADMIN_KEY = "Nq[nn#/uIT$AVYS`{H;:V=,OM[LR8sr!^?B<}u[5jy-]K+^nTLf87Fmil[cMq?k"
     ODDS_API_KEY = os.getenv("ODDS_API_KEY")
     PAYPAL_API_URL = os.getenv("PAYPAL_API_URL")
-    PAYPAL_API_TOKEN = os.getenv("PAYPAL_API_TOKEN")
+    PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
+    PAYPAL_SECRET = os.getenv("PAYPAL_SECRET")
 
 
 class ProductionConfig(Config):

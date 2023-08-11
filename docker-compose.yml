@@ -22,7 +22,8 @@ services:
       FLASK_DEBUG: 1
       MONGODB_CONNECTION_STRING: mongodb+srv://bet-royale-admin:Fe5BWjLwSiSP4byu@production-cluster.okz6gg9.mongodb.net/
       PAYPAL_API_URL: https://api-m.sandbox.paypal.com
-      PAYPAL_API_TOKEN: A21AAKQgB3cjjBNhgnGpG3l4lAuYf_7fgnP1J9ms-ZgMlAQrHdFr4tO2-ap0W73wOcwCSLM8QaqrPLUvJrdNsfyJ_r4r3rxIQ
+      PAYPAL_CLIENT_ID: AYcoOZajPBns1FI6WbHvgIGzsAJx1AWnY6rOwrvtiBoGlc4KrUeIJhtSlZI5CRjdKVmM3KrV7jt5rf3C
+      PAYPAL_SECRET: EKN-6LShkjDKI5nVBMGBFR7F-t6aiz6zSw8Ns8bgtjuixXmENACz3Z1EeronchlytYe69P4oYWZNwuz4
       ODDS_API_KEY: 87c963d43e0c21a33f7d029816a95f77
       PORT: 8000
     networks:
