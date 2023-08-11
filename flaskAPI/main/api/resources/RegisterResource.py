@@ -25,6 +25,6 @@ class RegisterResource(Resource):
         
         self.user_confirmation_service.send_confirmation_email(email)
         
-        response = jsonify({"token": token.to_string()})
+        response = jsonify()
         response.status_code = 201
         return response
