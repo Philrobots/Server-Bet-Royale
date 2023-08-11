@@ -1,10 +1,11 @@
 from flask import request, jsonify
 from flask_restful import Resource
+from main.service.UserService import UserService
 
 
 class LoginResource(Resource):
 
-    def __init__(self, user_service):
+    def __init__(self, user_service: UserService):
         self.user_service = user_service
 
     def post(self):

@@ -8,6 +8,7 @@ from main.infra.db.repository.UserAuthRepository import UserAuthRepository
 from main.infra.exception.FailedLoginException import FailedLoginException
 from main.infra.exception.NonExistingEmailException import NonExistingEmailException
 from main.infra.exception.NonExistingUserException import NonExistingUserException
+from main.infra.exception.UserNotConfirmedException import UserNotConfirmedException
 
 
 class UserService:
@@ -29,9 +30,15 @@ class UserService:
                 raise FailedLoginException
 
         if user.authenticate(password):
-            return user.create_auth_token()
+            if user.is_confirmed():
+                return user.create_auth_token()
+            else:
+                raise UserNotConfirmedException
         
         raise FailedLoginException
+    
+    def update_user(self, user: UserAuth):
+        self.user_repo.update_user(user)
 
     def register(self, username, password, email, birth_date) -> Token:
         user = self.user_auth_factory.create(username, password, email)
@@ -45,6 +52,9 @@ class UserService:
     
     def get_by_id(self, user_id: DomainId) -> UserAuth:
         return self.user_repo.get_by_id(user_id)
+    
+    def get_by_email(self, email) -> UserAuth:
+        return self.user_repo.get_by_email(email)
 
     
     def get_leaders(self) -> list[UserAuth]:

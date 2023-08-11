@@ -25,4 +25,6 @@ multipledispatch==0.6.0
 debugpy==1.6.6
 apscheduler==3.9.1
 stream-chat==4.8.0
-stripe==5.5.0
+bcrypt
+Flask-Mail
+flask_mail

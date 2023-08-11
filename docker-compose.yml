@@ -24,7 +24,10 @@ services:
       PAYPAL_API_URL: https://api-m.sandbox.paypal.com
       PAYPAL_CLIENT_ID: AYcoOZajPBns1FI6WbHvgIGzsAJx1AWnY6rOwrvtiBoGlc4KrUeIJhtSlZI5CRjdKVmM3KrV7jt5rf3C
       PAYPAL_SECRET: EKN-6LShkjDKI5nVBMGBFR7F-t6aiz6zSw8Ns8bgtjuixXmENACz3Z1EeronchlytYe69P4oYWZNwuz4
-      ODDS_API_KEY: 87c963d43e0c21a33f7d029816a95f77
+      ODDS_API_KEY: d3c2af9f0fae46013469384a7b009af4 
+      SECRET_KEY: VitAo;wH7noT2y2c!}yN'?o=X1|:[T]l!RS3;<s_?rW^a-S>+zQ9fItgn>T5{lguuid.uu
+      CLIENT_DOMAIN: http://localhost:3000
+      DOMAIN: http://localhost:8000
       PORT: 8000
     networks:
       backend:

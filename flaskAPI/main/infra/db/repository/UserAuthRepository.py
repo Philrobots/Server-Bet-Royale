@@ -12,10 +12,17 @@ class UserAuthRepository:
         self.connector = connector
         self.user_auth_schema = user_auth_schema
         self.db = self.connector.main.users
+    
+    def update_all(self):
+        self.db.update_many({ }, { "$set": { "confirmed": False } } )
 
     def add_user(self, user_auth: UserAuth):
         user_auth_dict = self.user_auth_schema.dump(user_auth)
         self.db.insert_one(user_auth_dict)
+    
+    def update_user(self, user_auth: UserAuth) -> None:
+        user_auth_dict = self.user_auth_schema.dump(user_auth)
+        result = self.db.replace_one({'_id': user_auth.user_id.to_object_id() }, user_auth_dict)
 
     def get_by_id(self, user_id: DomainId) -> UserAuth:
         try:

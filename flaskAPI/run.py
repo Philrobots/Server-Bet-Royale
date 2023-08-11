@@ -1,4 +1,5 @@
 from datetime import datetime
+from flask import request
 from main import API, app
 from main.api.resources.AcceptBetResource import AcceptBetResource
 from main.api.resources.BaseballSportsGameResource import BaseballSportsGameResource
@@ -36,6 +37,7 @@ from main.domain.sports_game.bookmakers.BookMakersFactory import BookMakersFacto
 from main.schedulers.SportsGameScheduler import SportsGameScheduler
 from main.service.PaymentService import PaymentService
 from main.service.PaypalService import PaypalService
+from main.service.UserConfirmationService import UserConfirmationService
 from pymongo import errors
 from main.api.schemas.request.CreateBetRequestSchema import CreateBetRequestSchema
 from main.api.schemas.response.BetResponseSchema import BetResponseSchema
@@ -126,6 +128,7 @@ class Context:
 
         self.paypal_service = PaypalService(app.config["PAYPAL_API_URL"], app.config["PAYPAL_CLIENT_ID"], app.config["PAYPAL_SECRET"])
         self.user_service = UserService(self.user_repo, self.user_factory, self.better_repo, self.better_factory)
+        self.user_confirmation_service = UserConfirmationService(user_service=self.user_service, secret_key=app.config["SECRET_KEY"], client_domain=app.config["CLIENT_DOMAIN"], domain=app.config["DOMAIN"])
         self.sports_game_service = SportsGameService(self.sports_game_repo)
         self.bet_service = BetService(self.better_repo, self.sports_game_repo, self.bet_factory, self.bet_repository, self.bet_amount_factory)
         self.better_stats_service = BetterStatsService(self.transaction_repo, self.better_stats_factory)
@@ -148,7 +151,7 @@ class Context:
         return {}
 
     def create_context_register_resource_class_kwargs(self):
-        return {"user_service": self.user_service}
+        return {"user_service": self.user_service, "user_confirmation_service": self.user_confirmation_service}
     
     def create_context_leaderboard_resource_class_kwargs(self):
         return {"user_service": self.user_service, "token_decoder": self.token_decoder}
@@ -191,6 +194,7 @@ class Context:
         
     def create_context_bet_with_id_resource_class_kwargs(self):
         return {"token_decoder": self.token_decoder, "bet_service" : self.bet_service}
+            
 
     def initialize_jobs(self):
         try:
@@ -207,6 +211,7 @@ class Context:
             self.scheduler.start()
         except errors.ServerSelectionTimeoutError:
             logging.warning("Mongodb is not running!")
+
 
 
 
@@ -235,7 +240,20 @@ API.add_resource(ChatResource, "/chat", resource_class_kwargs=context.create_con
 API.add_resource(SportsGameResource, "/sports", resource_class_kwargs=context.create_context_sports_game_resource_class_kwargs())
 API.add_resource(PaymentResource, "/payment", resource_class_kwargs=context.create_context_payment_resource_class_krwargs())
 
-if __name__ == "__main__":
+if __name__ == "__main__":    
+    
+    @app.route("/send_confirmation/<email>", methods = ['POST'])
+    def send_confirmation_email(email: str):
+        try:
+            context.user_confirmation_service.send_confirmation_email(email)
+            return "Email sent", 200
+        except Exception as e:
+            return str(e), 400
+            
+    @app.route("/confirm_email/<token>", methods = ['GET'])
+    def confirm_email(token: str):
+        return context.user_confirmation_service.confirm_email(token)
+    
     app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)), threaded=True)
     
     
