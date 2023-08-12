@@ -28,6 +28,8 @@ services:
       SECRET_KEY: VitAo;wH7noT2y2c!}yN'?o=X1|:[T]l!RS3;<s_?rW^a-S>+zQ9fItgn>T5{lguuid.uu
       CLIENT_DOMAIN: http://localhost:3000
       DOMAIN: http://localhost:8000
+      GMAIL_USER: betroyale67@gmail.com
+      GMAIL_PASSWORD: plnstkgnfanqcyww
       PORT: 8000
     networks:
       backend:

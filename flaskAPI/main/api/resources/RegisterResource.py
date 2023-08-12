@@ -21,10 +21,11 @@ class RegisterResource(Resource):
         password = request.json.get("password", "")
         email = request.json.get("email", "")
         birth_date = request.json.get("birthdate", "")
-        token = self.user_service.register(username, password, email, birth_date)
+        self.user_service.register(username, password, email, birth_date)
         
         self.user_confirmation_service.send_confirmation_email(email)
         
         response = jsonify()
         response.status_code = 201
         return response
+        
