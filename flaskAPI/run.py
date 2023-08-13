@@ -250,9 +250,9 @@ if __name__ == "__main__":
         except Exception as e:
             return str(e), 400
             
-    @app.route("/confirm_email/<email>", methods = ['GET'])
-    def confirm_email(email: str):
-        return context.user_confirmation_service.confirm_email(email)
+    @app.route("/confirm_email/<token>", methods = ['GET'])
+    def confirm_email(token: str):
+        return context.user_confirmation_service.confirm_email(token)
     
     app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)), threaded=True)
     

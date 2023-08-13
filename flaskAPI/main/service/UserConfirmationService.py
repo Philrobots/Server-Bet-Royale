@@ -1,5 +1,5 @@
 import logging
-from flask import  redirect, render_template
+from flask import  redirect, render_template, url_for
 from main.domain.identifiers.DomainId import DomainId
 from main.infra.authentication.UserAuth import UserAuth
 from main.service.UserService import UserService
@@ -21,15 +21,16 @@ class UserConfirmationService:
     def confirm_email(self, token: str):
         email = self.confirm_token(token)
         
-        logging.info(email)
-        
         if email is False:
             return "The confirmation link is invalid or has expired.", 404
         
-        user: UserAuth = self.user_service.get_by_email(email)
+        try: 
+            user: UserAuth = self.user_service.get_by_email(email)
+        except:
+            return "The confirmation link is invalid or has expired.", 404
         
         if user.confirmed:
-            return redirect("{}/login?email={}".format(self.client_domain, email))
+            return redirect("{}/authentication/sign-in?email={}".format(self.client_domain, email))
         
         user.confirm_user()
         self.user_service.update_user(user)
@@ -39,13 +40,8 @@ class UserConfirmationService:
     def send_confirmation_email(self, email: str): 
         verification_token = self.get_verification_code(email)
         
-        logging.info(verification_token)
-        
-        confirm_url = self.domain + "/confirm_email/" + verification_token
+        confirm_url = url_for('confirm_email', token=verification_token, _external=True)
         html = render_template('ConfirmEmail.html', confirm_url=confirm_url)
-        
-        logging.info(html)
-        logging.info(confirm_url)
         
         message = Message(
             'Please Confirm your Email',
