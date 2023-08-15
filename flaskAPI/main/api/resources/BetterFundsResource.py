@@ -22,4 +22,4 @@ class BetterFundsResource(Resource):
             response = jsonify(balance=float(self.better_funds_service.get_balance(user_id)))
             return response
         except:
-            return jsonify(balance=0)
+            return "User does not exist", 404

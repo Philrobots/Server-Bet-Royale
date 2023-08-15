@@ -10,13 +10,12 @@ from flask_mail import Message
 
 class UserConfirmationService:
 
-    def __init__(self, user_service: UserService, secret_key: str, client_domain: str, domain: str):
+    def __init__(self, user_service: UserService, secret_key: str, client_domain: str):
         self.user_service = user_service
         self.secret_key = secret_key
         self.salt = bcrypt.gensalt()
         self.client_domain = client_domain
         self.mail = mail
-        self.domain = domain
     
     def confirm_email(self, token: str):
         email = self.confirm_token(token)

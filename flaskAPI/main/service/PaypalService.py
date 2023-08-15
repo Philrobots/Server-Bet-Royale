@@ -23,8 +23,12 @@ class PaypalService:
         param = {
             'grant_type': 'client_credentials',
         }
+        
+        logging.info(headers)
 
         url = '{}/v2/checkout/orders/{}'.format(self.paypal_api_url, order_id)
+        
+        logging.info(url)
         try:
             response = requests.request("GET", url, headers=headers, data=param)
             response_body = response.json()

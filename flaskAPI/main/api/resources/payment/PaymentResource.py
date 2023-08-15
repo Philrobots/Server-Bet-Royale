@@ -1,3 +1,4 @@
+import logging
 from flask import request
 from flask_restful import Resource
 from flask import request, jsonify
@@ -25,6 +26,8 @@ class PaymentResource(Resource):
     def post(self):
         auth_token = request.headers.get("Authorization", "")
         user_id = DomainId(self.token_decoder.decode_auth_token(auth_token))
+        
+        logging.info(f"User {user_id} is creating a new payment")
         
         create_payment_dict = request.json
         create_payment_info: CreatePurchaseInfo = self.create_purchase_request_schema.load(create_payment_dict)

@@ -10,7 +10,6 @@ class Config(object):
     PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
     PAYPAL_SECRET = os.getenv("PAYPAL_SECRET")
     CLIENT_DOMAIN = os.getenv("CLIENT_DOMAIN")
-    DOMAIN = os.getenv("DOMAIN")
 
 class ProductionConfig(Config):
     pass

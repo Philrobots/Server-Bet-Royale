@@ -128,7 +128,7 @@ class Context:
 
         self.paypal_service = PaypalService(app.config["PAYPAL_API_URL"], app.config["PAYPAL_CLIENT_ID"], app.config["PAYPAL_SECRET"])
         self.user_service = UserService(self.user_repo, self.user_factory, self.better_repo, self.better_factory)
-        self.user_confirmation_service = UserConfirmationService(user_service=self.user_service, secret_key=app.config["SECRET_KEY"], client_domain=app.config["CLIENT_DOMAIN"], domain=app.config["DOMAIN"])
+        self.user_confirmation_service = UserConfirmationService(user_service=self.user_service, secret_key=app.config["SECRET_KEY"], client_domain=app.config["CLIENT_DOMAIN"])
         self.sports_game_service = SportsGameService(self.sports_game_repo)
         self.bet_service = BetService(self.better_repo, self.sports_game_repo, self.bet_factory, self.bet_repository, self.bet_amount_factory)
         self.better_stats_service = BetterStatsService(self.transaction_repo, self.better_stats_factory)
