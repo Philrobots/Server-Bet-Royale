@@ -22,6 +22,7 @@ from main.api.resources.SportsGameResource import SportsGameResource
 from main.api.resources.payment.CreatePurchaseRequestSchema import CreatePurchaseRequestSchema
 from main.api.resources.payment.PaymentResource import PaymentResource
 from main.api.resources.payment.PurchaseResponseSchema import PurchaseResponseSchema
+from main.api.resources.EmailConfirmationResource import EmailConfirmationResource
 
 from main.api.schemas.response.BetterStatsResponseSchema import BetterStatsResponseSchema
 from main.domain.better_stats.BetterStatsFactory import BetterStatsFactory
@@ -128,7 +129,7 @@ class Context:
 
         self.paypal_service = PaypalService(app.config["PAYPAL_API_URL"], app.config["PAYPAL_CLIENT_ID"], app.config["PAYPAL_SECRET"])
         self.user_service = UserService(self.user_repo, self.user_factory, self.better_repo, self.better_factory)
-        self.user_confirmation_service = UserConfirmationService(user_service=self.user_service, secret_key=app.config["SECRET_KEY"], client_domain=app.config["CLIENT_DOMAIN"])
+        self.user_confirmation_service = UserConfirmationService(user_service=self.user_service, secret_key=app.config["SECRET_KEY"], client_domain=app.config["CLIENT_DOMAIN"], domain=app.config["DOMAIN"])
         self.sports_game_service = SportsGameService(self.sports_game_repo)
         self.bet_service = BetService(self.better_repo, self.sports_game_repo, self.bet_factory, self.bet_repository, self.bet_amount_factory)
         self.better_stats_service = BetterStatsService(self.transaction_repo, self.better_stats_factory)
@@ -149,6 +150,9 @@ class Context:
     
     def create_context_chat_resource_class_kwargs(self):
         return {}
+    
+    def create_context_email_confirmation_resource_class_kwargs(self):
+        return { "user_confirmation_service": self.user_confirmation_service }
 
     def create_context_register_resource_class_kwargs(self):
         return {"user_service": self.user_service, "user_confirmation_service": self.user_confirmation_service}
@@ -239,21 +243,9 @@ API.add_resource(LeaderboardResource, "/leaderboard", resource_class_kwargs=cont
 API.add_resource(ChatResource, "/chat", resource_class_kwargs=context.create_context_chat_resource_class_kwargs())
 API.add_resource(SportsGameResource, "/sports", resource_class_kwargs=context.create_context_sports_game_resource_class_kwargs())
 API.add_resource(PaymentResource, "/payment", resource_class_kwargs=context.create_context_payment_resource_class_krwargs())
+API.add_resource(EmailConfirmationResource, "/confirm_email", resource_class_kwargs=context.create_context_email_confirmation_resource_class_kwargs())
 
-if __name__ == "__main__":    
-    
-    @app.route("/send_confirmation/<email>", methods = ['POST'])
-    def send_confirmation_email(email: str):
-        try:
-            context.user_confirmation_service.send_confirmation_email(email)
-            return "Email sent", 200
-        except Exception as e:
-            return str(e), 400
-            
-    @app.route("/confirm_email/<token>", methods = ['GET'])
-    def confirm_email(token: str):
-        return context.user_confirmation_service.confirm_email(token)
-    
+if __name__ == "__main__":        
     app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)), threaded=True)
     
     

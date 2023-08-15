@@ -10,16 +10,17 @@ from flask_mail import Message
 
 class UserConfirmationService:
 
-    def __init__(self, user_service: UserService, secret_key: str, client_domain: str):
+    def __init__(self, user_service: UserService, secret_key: str, client_domain: str, domain: str):
         self.user_service = user_service
         self.secret_key = secret_key
         self.salt = bcrypt.gensalt()
         self.client_domain = client_domain
         self.mail = mail
+        self.domain = domain
     
     def confirm_email(self, token: str):
         email = self.confirm_token(token)
-        
+
         if email is False:
             return "The confirmation link is invalid or has expired.", 404
         
@@ -39,7 +40,7 @@ class UserConfirmationService:
     def send_confirmation_email(self, email: str): 
         verification_token = self.get_verification_code(email)
         
-        confirm_url = url_for('confirm_email', token=verification_token, _external=True)
+        confirm_url = '{}/confirm_email?token={}'.format(self.domain, verification_token)
         html = render_template('ConfirmEmail.html', confirm_url=confirm_url)
         
         message = Message(
