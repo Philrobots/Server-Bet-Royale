@@ -1,12 +1,10 @@
 from typing import List
-
 import pymongo
 from main.domain.identifiers import DomainId
 from main.infra.db.connector.MongoConnector import MongoConnector
 from main.infra.schemas.mongo.MongoTransactionSchema import MongoTransactionSchema
 from main.domain.transaction.Transaction import Transaction
 from datetime import datetime, timedelta
-import pytz
 
 
 class TransactionRepository:

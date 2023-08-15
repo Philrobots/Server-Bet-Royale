@@ -14,21 +14,12 @@ class BetterFundsResource(Resource):
         self.better_funds_service = better_funds_service
         self.add_better_funds_request_schema = add_better_funds_request_schema
 
-    def post(self):
-        auth_token = request.headers.get("Authorization", "")
-        user_id = DomainId(self.token_decoder.decode_auth_token(auth_token))
-        bet_request_dict = request.json
-        loaded_dict = self.add_better_funds_request_schema.load(bet_request_dict)
-
-        self.better_funds_service.add_funds(user_id, loaded_dict["amount"])
-
-        response = jsonify()
-        response.status_code = 200
-        return response
-
     def get(self):
-        auth_token = request.headers.get("Authorization", "")
-        user_id = DomainId(self.token_decoder.decode_auth_token(auth_token))
+        try:
+            auth_token = request.headers.get("Authorization", "")
+            user_id = DomainId(self.token_decoder.decode_auth_token(auth_token))
 
-        response = jsonify(balance=float(self.better_funds_service.get_balance(user_id)))
-        return response
+            response = jsonify(balance=float(self.better_funds_service.get_balance(user_id)))
+            return response
+        except:
+            return "User does not exist", 404

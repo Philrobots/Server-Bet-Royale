@@ -34,5 +34,9 @@ errors = {
     "InvalidDomainIdException": {
         "message": "The id format is not valid",
         "status": 400
+    },
+    "UserNotConfirmedException": {
+        "message": "You must confirm your email before logging in",
+        "status": 400
     }
 }

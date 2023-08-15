@@ -39,7 +39,7 @@ class UserAuthFactory:
             pass
 
         return UserAuth(self._validate_username(username), self._validate_and_hash_password(password), self._validate_email(email), DomainId(),
-                        self.secret_key)
+                        self.secret_key, False)
 
     def _validate_and_hash_password(self, password):
         if re.match(self._PASSWORD_REGEX, password):
