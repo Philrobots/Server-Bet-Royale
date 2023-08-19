@@ -25,7 +25,7 @@ class SportsGameScheduler:
         now = datetime.now(tz=pytz.timezone('US/Eastern'))
         current_time = now.strftime("%H:%M:%S")
         start = '01:00:00'
-        end = '13:00:00'
+        end = '14:00:00'
         return current_time > start and current_time < end
 
     def remove_old_games_and_old_transactions(self) -> None:
