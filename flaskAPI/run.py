@@ -1,10 +1,12 @@
-from datetime import datetime
+from datetime import datetime, time
 from flask import request
+import pytz
 from main import API, app
 from main.api.resources.AcceptBetResource import AcceptBetResource
 from main.api.resources.BaseballSportsGameResource import BaseballSportsGameResource
 from main.api.resources.BasketballSportsGameResource import BasketballSportsGameResource
 from main.api.resources.BetWithIdResource import BetWithIdResource
+from main.api.resources.GiftResource import GiftResource
 from main.api.resources.LeaderBordResource import LeaderboardResource
 from main.api.resources.BetResource import BetResource
 from main.api.resources.BetterFundsResource import BetterFundsResource
@@ -25,17 +27,23 @@ from main.api.resources.payment.PurchaseResponseSchema import PurchaseResponseSc
 from main.api.resources.EmailConfirmationResource import EmailConfirmationResource
 
 from main.api.schemas.response.BetterStatsResponseSchema import BetterStatsResponseSchema
+from main.api.schemas.response.GiftResponseSchema import GiftResponseSchema
 from main.domain.better_stats.BetterStatsFactory import BetterStatsFactory
+from main.domain.gift.GiftFactory import GiftFactory
 from main.domain.purchase.PurchaseFactory import PurchaseFactory
 from main.domain.transaction.TransactionInfoFactory import TransactionInfoFactory
 from main.infra.db.repository.AppSettingRepository import AppSettingRepository
+from main.infra.db.repository.GiftRepository import GiftRepository
 from main.infra.db.repository.PurchaseRepository import PurchaseRepository
 from main.infra.schemas.mongo.MongoAppSettingSchema import MongoAppSettingSchema
+from main.infra.schemas.mongo.MongoGiftSchema import MongoGiftSchema
 from main.infra.schemas.mongo.MongoPurchaseSchema import MongoPurchaseSchema
 from main.schedulers.BetScheduler import BetScheduler
+from main.schedulers.GiftScheduler import GiftScheduler
 from main.service.BetterFundsService import BetterFundsService
 from main.domain.sports_game.bookmakers.BookMakersFactory import BookMakersFactory
 from main.schedulers.SportsGameScheduler import SportsGameScheduler
+from main.service.GiftService import GiftService
 from main.service.PaymentService import PaymentService
 from main.service.PaypalService import PaypalService
 from main.service.UserConfirmationService import UserConfirmationService
@@ -93,10 +101,13 @@ class Context:
         self.better_stats_response_schema = BetterStatsResponseSchema()
         self.chat_resource = ChatResource()
         self.purchase_response_schema = PurchaseResponseSchema()
+        self.gift_response_schema = GiftResponseSchema()
         
         self.transaction_schema = MongoTransactionSchema()
+        self.mongo_gift_schema = MongoGiftSchema()
         self.add_better_funds_schema = AddBetterFundsRequestSchema()
         
+        self.gift_repository = GiftRepository(self.mongo_gift_schema, self.mongo_connector)
         self.sports_game_repo = SportsGameRepository(self.mongo_sports_game_schema, self.mongo_connector, self.sports_key)
         self.transaction_repo = TransactionRepository(transaction_schema=self.transaction_schema,
                                                       connector=self.mongo_connector)
@@ -126,6 +137,7 @@ class Context:
         self.better_stats_factory = BetterStatsFactory(self.transaction_info_factory)
         self.app_setting_repo = AppSettingRepository(self.app_setting_schema, self.mongo_connector)
         self.purchase_repository = PurchaseRepository(self.purchase_schema, self.mongo_connector)
+        self.gift_factory = GiftFactory()
 
         self.paypal_service = PaypalService(app.config["PAYPAL_API_URL"], app.config["PAYPAL_CLIENT_ID"], app.config["PAYPAL_SECRET"])
         self.user_service = UserService(self.user_repo, self.user_factory, self.better_repo, self.better_factory)
@@ -137,12 +149,14 @@ class Context:
                                               better_repository=self.better_repo, 
                                               purchase_factory=self.purchase_factory, 
                                               paypalService=self.paypal_service)
+        self.better_funds_service = BetterFundsService(self.better_repo)
+        self.gift_service = GiftService(self.gift_repository, self.gift_factory, self.better_funds_service)
         
         self.sports_game_scheduler = SportsGameScheduler(odds_api_engine=self.odds_api_engine, sports_game_factory=self.sports_game_factory,
                                                          sports_game_repo=self.sports_game_repo, sports_game_service=self.sports_game_service, bet_service=self.bet_service, better_stats_service=self.better_stats_service, sports_key=self.sports_key)
         self.bet_scheduler = BetScheduler(bet_service=self.bet_service, bet_repo=self.bet_repository, better_repo=self.better_repo)
-        self.all_schedulers = [self.sports_game_scheduler, self.bet_scheduler]
-        self.better_funds_service = BetterFundsService(self.better_repo)
+        self.gift_scheduler = GiftScheduler(gift_service=self.gift_service)
+        self.all_schedulers = [self.sports_game_scheduler, self.bet_scheduler, self.gift_scheduler]
         self.scheduler = BackgroundScheduler()
 
     def create_context_login_resource_class_kwargs(self):
@@ -153,6 +167,9 @@ class Context:
     
     def create_context_email_confirmation_resource_class_kwargs(self):
         return { "user_confirmation_service": self.user_confirmation_service }
+    
+    def create_context_gift_resource_class_kwargs(self):
+        return {"gift_service": self.gift_service, "gift_response_schema": self.gift_response_schema , "token_decoder": self.token_decoder }
 
     def create_context_register_resource_class_kwargs(self):
         return {"user_service": self.user_service, "user_confirmation_service": self.user_confirmation_service}
@@ -211,7 +228,17 @@ class Context:
 
                     if setting_class_name == class_name and setting_method_name in method_names:
                         logging.warning("Adding job: %s", app_setting.value)
-                        self.scheduler.add_job(getattr(scheduler, setting_method_name), next_run_time=datetime.now(), **app_setting.kwargs)
+                        if class_name == "GiftScheduler":
+                            # Run job at midnight
+                            tz = pytz.timezone('US/Eastern')
+                            today = datetime.now(tz).date()
+                            midnight = tz.localize(datetime.combine(today, time(0, 0)), is_dst=None)
+                            utc_dt = midnight.astimezone(pytz.utc)  
+                            
+                            logging.info("Adding Gift sheduler now, but should start at {}".format(utc_dt))
+                            self.scheduler.add_job(getattr(scheduler, setting_method_name), next_run_time=utc_dt,  timezone=pytz.timezone('US/Eastern'),**app_setting.kwargs)
+                        else:  
+                            self.scheduler.add_job(getattr(scheduler, setting_method_name), next_run_time=datetime.now(),  timezone=pytz.timezone('US/Eastern'),**app_setting.kwargs)
             self.scheduler.start()
         except errors.ServerSelectionTimeoutError:
             logging.warning("Mongodb is not running!")
@@ -244,6 +271,7 @@ API.add_resource(ChatResource, "/chat", resource_class_kwargs=context.create_con
 API.add_resource(SportsGameResource, "/sports", resource_class_kwargs=context.create_context_sports_game_resource_class_kwargs())
 API.add_resource(PaymentResource, "/payment", resource_class_kwargs=context.create_context_payment_resource_class_krwargs())
 API.add_resource(EmailConfirmationResource, "/confirm_email", resource_class_kwargs=context.create_context_email_confirmation_resource_class_kwargs())
+API.add_resource(GiftResource, "/gift", resource_class_kwargs=context.create_context_gift_resource_class_kwargs())
 
 if __name__ == "__main__":        
     app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)), threaded=True)

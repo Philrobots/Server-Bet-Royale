@@ -11,3 +11,8 @@ class BetterFundsService:
     def get_balance(self, better_id: DomainId) -> Currency:
         better = self.better_repo.get_by_id(better_id)
         return better.get_balance()
+    
+    def add_funds(self, better_id: DomainId, price: Currency) -> None:
+        better = self.better_repo.get_by_id(better_id)
+        better.add_funds(price)
+        self.better_repo.update_better(better)

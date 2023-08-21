@@ -1,0 +1,2 @@
+class NonExistingGiftException(Exception):
+    pass
