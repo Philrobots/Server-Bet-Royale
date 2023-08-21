@@ -149,14 +149,14 @@ class Context:
                                               better_repository=self.better_repo, 
                                               purchase_factory=self.purchase_factory, 
                                               paypalService=self.paypal_service)
-        self.gift_service = GiftService(self.gift_repository, self.gift_factory)
+        self.better_funds_service = BetterFundsService(self.better_repo)
+        self.gift_service = GiftService(self.gift_repository, self.gift_factory, self.better_funds_service)
         
         self.sports_game_scheduler = SportsGameScheduler(odds_api_engine=self.odds_api_engine, sports_game_factory=self.sports_game_factory,
                                                          sports_game_repo=self.sports_game_repo, sports_game_service=self.sports_game_service, bet_service=self.bet_service, better_stats_service=self.better_stats_service, sports_key=self.sports_key)
         self.bet_scheduler = BetScheduler(bet_service=self.bet_service, bet_repo=self.bet_repository, better_repo=self.better_repo)
         self.gift_scheduler = GiftScheduler(gift_service=self.gift_service)
         self.all_schedulers = [self.sports_game_scheduler, self.bet_scheduler, self.gift_scheduler]
-        self.better_funds_service = BetterFundsService(self.better_repo)
         self.scheduler = BackgroundScheduler()
 
     def create_context_login_resource_class_kwargs(self):
@@ -169,7 +169,7 @@ class Context:
         return { "user_confirmation_service": self.user_confirmation_service }
     
     def create_context_gift_resource_class_kwargs(self):
-        return {"gift_service": self.gift_service, "gift_response_schema": self.gift_response_schema}
+        return {"gift_service": self.gift_service, "gift_response_schema": self.gift_response_schema , "token_decoder": self.token_decoder }
 
     def create_context_register_resource_class_kwargs(self):
         return {"user_service": self.user_service, "user_confirmation_service": self.user_confirmation_service}
@@ -236,8 +236,7 @@ class Context:
                             utc_dt = midnight.astimezone(pytz.utc)  
                             
                             logging.info("Adding Gift sheduler now, but should start at {}".format(utc_dt))
-                            self.scheduler.add_job(getattr(scheduler, setting_method_name), next_run_time=datetime.now(),  timezone=pytz.timezone('US/Eastern'),**app_setting.kwargs)
-                           # self.scheduler.add_job(getattr(scheduler, setting_method_name), next_run_time=utc_dt,  timezone=pytz.timezone('US/Eastern'),**app_setting.kwargs)
+                            self.scheduler.add_job(getattr(scheduler, setting_method_name), next_run_time=utc_dt,  timezone=pytz.timezone('US/Eastern'),**app_setting.kwargs)
                         else:  
                             self.scheduler.add_job(getattr(scheduler, setting_method_name), next_run_time=datetime.now(),  timezone=pytz.timezone('US/Eastern'),**app_setting.kwargs)
             self.scheduler.start()

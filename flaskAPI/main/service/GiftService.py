@@ -1,21 +1,26 @@
+from main.domain.currency.Currency import Currency
 from main.domain.gift.Gift import Gift
 from main.domain.gift.GiftFactory import GiftFactory
 from main.domain.identifiers.DomainId import DomainId
 from main.infra.db.repository.GiftRepository import GiftRepository
 from main.infra.exception.NonExistingGiftException import NonExistingGiftException
+from main.service.BetterFundsService import BetterFundsService
 
 
 class GiftService:
     
-    def __init__(self, gift_repository: GiftRepository, gift_factory: GiftFactory) -> None:
+    def __init__(self, gift_repository: GiftRepository, gift_factory: GiftFactory, better_service: BetterFundsService) -> None:
         self.gift_repository = gift_repository
         self.gift_factory = gift_factory
+        self.better_service = better_service
     
     def receive_gift(self, user_id: DomainId):
         gift = self.get_gift(user_id)
-        gift.receive_gift()
-        self.gift_repository.update_gift(gift)
-        return gift
+        received = gift.receive_gift()
+        if received:
+            self.better_service.add_funds(user_id, Currency(gift.price))
+            self.gift_repository.update_gift(gift)
+        return received
     
     def create_gift(self, user_id: DomainId) -> Gift:
         gift = self.gift_factory.create(user_id)

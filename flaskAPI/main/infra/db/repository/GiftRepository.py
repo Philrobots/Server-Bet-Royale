@@ -20,10 +20,10 @@ class GiftRepository:
         
     def find_by_user_id(self, user_id: DomainId) -> Gift:
         try:
-            resutl = self.db.find_one({'user_id': user_id.to_object_id()})
-            if resutl is None:
+            result = self.db.find_one({'user_id': user_id.to_object_id()})
+            if result is None:
                 raise NonExistingGiftException
-            return self.mongo_gift_schema.load(resutl)        
+            return self.mongo_gift_schema.load(result)        
         except ValueError:
             raise NonExistingGiftException
         

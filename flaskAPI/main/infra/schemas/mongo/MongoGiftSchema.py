@@ -8,7 +8,7 @@ class MongoGiftSchema(Schema):
     user_id = MongoDomainIdField(required=True)
     price = fields.Float(required=True)
     can_receive = fields.Bool(required=True)
-    time_last_gift = fields.DateTime(required=False)
+    time_last_gift = fields.DateTime(required=True, allow_none=True)
     total_price_gift_receive = fields.Float(required=True)
     number_of_gift_receive = fields.Float(required=True)
     

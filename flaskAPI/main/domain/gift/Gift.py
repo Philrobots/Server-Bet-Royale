@@ -1,4 +1,6 @@
 import datetime
+
+import pytz
 from main.domain.identifiers.DomainId import DomainId
 
 
@@ -16,8 +18,11 @@ class Gift:
     def can_receive_gift(self):
         return self.can_receive
     
-    def receive_gift(self):
+    def receive_gift(self) -> bool:
+        if self.can_receive is False:
+            return False
         self.can_receive = False
-        self.time_last_gift = datetime.datetime.now()
+        self.time_last_gift = datetime.datetime.now(pytz.timezone('US/Eastern'))
         self.total_price_gift_receive += self.price
         self.number_of_gift_receive += 1
+        return True
