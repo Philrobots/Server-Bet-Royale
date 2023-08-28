@@ -18,9 +18,8 @@ class SportsGameResponse:
 
 
 
-            if len(sport_key_attribute) <= 12:
-                sport_key_attribute.append(
-                    self.sports_game_response_schema.dump(sport_game))
+            
+            sport_key_attribute.append(self.sports_game_response_schema.dump(sport_game))
 
     def get_games(self):
         return self.__str__()
