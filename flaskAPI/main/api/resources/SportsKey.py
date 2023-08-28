@@ -18,7 +18,6 @@ class SportsKey:
     def get_active_sports(self) -> list[str]:
         return [
             self.american_football_nfl,
-            self.american_nfl_preseason,
             self.us_college_football,
             self.baseball_mlb,
             self.england_premier_league,
