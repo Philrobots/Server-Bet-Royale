@@ -22,5 +22,6 @@ class SportsKey:
             self.baseball_mlb,
             self.england_premier_league,
             self.spain_la_liga,
-            self.cfl_football
+            self.cfl_football,
+            self.soccer_mls
         ]
