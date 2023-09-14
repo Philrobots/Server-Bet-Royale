@@ -20,20 +20,20 @@ services:
       FLASK_APP: run.py
       FLASK_ENV: development
       FLASK_DEBUG: 1
-      MONGODB_CONNECTION_STRING: mongodb+srv://bet-royale-leader:ECWObn4uW1Hvfj1U@bet-royale-bd.k5r0uf0.mongodb.net/
-      PAYPAL_API_URL: https://api-m.sandbox.paypal.com
-      PAYPAL_CLIENT_ID: AYcoOZajPBns1FI6WbHvgIGzsAJx1AWnY6rOwrvtiBoGlc4KrUeIJhtSlZI5CRjdKVmM3KrV7jt5rf3C
-      PAYPAL_SECRET: EKN-6LShkjDKI5nVBMGBFR7F-t6aiz6zSw8Ns8bgtjuixXmENACz3Z1EeronchlytYe69P4oYWZNwuz4
-      ODDS_API_KEY: 87c963d43e0c21a33f7d029816a95f77
-      SECRET_KEY: VitAo;wH7noT2y2c!}yN'?o=X1|:[T]l!RS3;<s_?rW^a-S>+zQ9fItgn>T5{lguuid.uu
-      CLIENT_DOMAIN: http://localhost:3000
-      DOMAIN: http://localhost:8000
-      GMAIL_USER: betroyale67@gmail.com
-      GMAIL_PASSWORD: plnstkgnfanqcyww
-      PORT: 8000
+      MONGODB_CONNECTION_STRING: $MONGODB_CONNECTION_STRING$
+      PAYPAL_API_URL: $PAYPAL_API_URL$
+      PAYPAL_CLIENT_ID: $PAYPAL_CLIENT_ID$
+      PAYPAL_SECRET: $PAYPAL_SECRET$
+      ODDS_API_KEY: $ODDS_API_KEY$
+      SECRET_KEY: $SECRET_KEY$
+      CLIENT_DOMAIN: $CLIENT_DOMAIN$
+      DOMAIN: $DOMAIN$
+      GMAIL_USER: $GMAIL_USER$
+      GMAIL_PASSWORD: $PASSWORD$
+      PORT: $PORT$
     networks:
       backend:
-        ipv4_address: 172.18.1.4
+        ipv4_address: $
     ports:
       - 8000:8000
       - 5678:5678
@@ -47,14 +47,14 @@ services:
     image: mongo
     container_name: 'mongodb'
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: golf123
-      MONGO_INITDB_DATABASE: flaskdb
-      MONGODB_DATA_DIR: /data/db
-      MONGODB_LOG_DIR: /dev/null
+      MONGO_INITDB_ROOT_USERNAME: $
+      MONGO_INITDB_ROOT_PASSWORD: $
+      MONGO_INITDB_DATABASE: $
+      MONGODB_DATA_DIR: $
+      MONGODB_LOG_DIR: $
     networks:
       backend:
-        ipv4_address: 172.18.1.2
+        ipv4_address: $
     volumes:
       - mongodbdata:/data/db
     ports: 
