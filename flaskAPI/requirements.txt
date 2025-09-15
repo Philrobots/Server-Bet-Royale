@@ -6,7 +6,7 @@ Flask-RESTful==0.3.8
 itsdangerous==1.1.0
 Jinja2==2.11.3
 MarkupSafe==3.0.2
-pycparser==2.20
+pycparser==2.23
 pytz==2025.1
 six==1.14.0
 Werkzeug==1.0.0
